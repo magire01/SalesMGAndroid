@@ -46,7 +46,6 @@ fun OrdersScreen(
     state: OrderState,
     navController: NavController,
     onEvent: (OrderEvent) -> Unit,
-    onItemEvent: (ItemEvent) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -94,7 +93,6 @@ fun OrdersScreen(
                                 .height(60.dp),
                             onClick = {
                                 state.selectedOrderNumber.value = state.orders[index].orderNumber
-                                onItemEvent(ItemEvent.GetItemById(state.selectedOrderNumber.value))
                                 navController.navigate("SavedOrderDetails")
                             }
                         ) {

@@ -87,7 +87,6 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 tabController = tabController,
                                 onEvent = viewModel::onEvent,
-                                onItemEvent = viewModel::onItemEvent,
                                 items = items,
                             )
                         }
@@ -96,7 +95,6 @@ class MainActivity : ComponentActivity() {
                                 state = state,
                                 navController = navController,
                                 onEvent = viewModel::onEvent,
-                                onItemEvent = viewModel::onItemEvent
                             )
                         }
                         composable("ItemMenu") {

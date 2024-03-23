@@ -84,7 +84,7 @@ fun SavedOrderDetails(
             }
         }
     ) { paddingValues ->
-
+        onEvent(ItemEvent.GetItemById(state.selectedOrderNumber.value))
         LazyColumn(
             contentPadding = paddingValues,
             modifier = Modifier

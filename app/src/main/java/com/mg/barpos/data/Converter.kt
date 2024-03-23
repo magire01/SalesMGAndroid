@@ -4,7 +4,6 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 @ProvidedTypeConverter
 class Converter {
-
     @TypeConverter
     fun toStringData(array: Array<String>): String {
         if (array.isEmpty()) {
@@ -20,8 +19,6 @@ class Converter {
             return emptyArray()
         } else {
             return string.split(",").toTypedArray()
-
         }
     }
-
 }

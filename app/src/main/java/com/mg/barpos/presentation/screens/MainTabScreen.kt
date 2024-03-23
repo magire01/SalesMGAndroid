@@ -40,7 +40,6 @@ fun MainTabScreen(
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
-    onItemEvent: (ItemEvent) -> Unit,
     items: Array<MenuItem>
 ) {
     Scaffold(
@@ -65,9 +64,8 @@ fun MainTabScreen(
                 navController = navController,
                 tabController = tabController,
                 onEvent = onEvent,
-                onItemEvent = onItemEvent,
                 items = items
-                )
+            )
         }
     }
 }
@@ -78,16 +76,14 @@ fun Navigations(
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
-    onItemEvent: (ItemEvent) -> Unit,
     items: Array<MenuItem>
-    ) {
+) {
     NavHost(tabController, startDestination = NavigationItem.OrdersScreen.route) {
         composable(NavigationItem.OrdersScreen.route) {
             OrdersScreen(
                 state = state,
                 navController = navController,
                 onEvent = onEvent,
-                onItemEvent = onItemEvent
             )
         }
         composable(NavigationItem.ItemMenu.route) {
