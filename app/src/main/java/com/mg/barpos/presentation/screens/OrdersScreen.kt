@@ -93,6 +93,7 @@ fun OrdersScreen(
                                 .height(60.dp),
                             onClick = {
                                 state.selectedOrderNumber.value = state.orders[index].orderNumber
+                                state.orderTotal.value = state.orders[index].orderTotal
                                 navController.navigate("SavedOrderDetails")
                             }
                         ) {

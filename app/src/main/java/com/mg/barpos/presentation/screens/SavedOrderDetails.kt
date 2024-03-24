@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,7 @@ import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.ItemRow
+import com.mg.barpos.presentation.components.TotalRow
 import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -103,6 +105,11 @@ fun SavedOrderDetails(
                     itemName = state.items[index].itemName,
                     itemPrice = state.items[index].itemPrice.toString(),
                     selectedSides = state.items[index].selectedSides
+                )
+            }
+            item {
+                TotalRow(
+                    orderTotal = state.orderTotal.value
                 )
             }
         }

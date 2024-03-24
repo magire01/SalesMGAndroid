@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +32,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +50,7 @@ import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.ItemRow
+import com.mg.barpos.presentation.components.TotalRow
 import kotlin.reflect.KFunction1
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -56,6 +61,7 @@ fun ConfirmOrderScreen(
     onEvent: (OrderEvent) -> Unit,
     onItemEvent: (ItemEvent) -> Unit,
 ) {
+    var orderTotal: Double = 0.00
     Scaffold(
         topBar = {
             Row(
@@ -109,7 +115,8 @@ fun ConfirmOrderScreen(
                     onEvent(
                         OrderEvent.SaveOrder(
                             orderName = state.orderName.value,
-                            isTab = false
+                            isTab = false,
+                            orderTotal = orderTotal
                         )
                     )
 
@@ -172,6 +179,11 @@ fun ConfirmOrderScreen(
                     itemPrice = state.selectedItems[index].itemPrice.toString(),
                     selectedSides = state.selectedItems[index].selectedSides
                 )
+                orderTotal += state.selectedItems[index].itemPrice
+
+            }
+            item {
+                TotalRow(orderTotal = orderTotal)
             }
         }
     }

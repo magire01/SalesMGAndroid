@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 data class Item(
     val orderId: Int,
     val itemName: String,
-    val itemPrice: Int,
+    val itemPrice: Double,
     val sideOptions: Array<String>,
     val selectedSides: Array<String>,
 
