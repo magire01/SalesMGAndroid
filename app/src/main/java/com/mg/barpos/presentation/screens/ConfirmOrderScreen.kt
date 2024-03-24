@@ -127,6 +127,7 @@ fun ConfirmOrderScreen(
                                 orderId = state.orderNumber,
                                 itemName = item.itemName,
                                 itemPrice = item.itemPrice,
+                                numberOfSides = item.numberOfSides,
                                 sideOptions = item.sideOptions,
                                 selectedSides = item.selectedSides
                             )

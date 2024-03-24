@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -32,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -41,6 +43,7 @@ import com.mg.barpos.data.Item
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.components.ItemRow
+import com.mg.barpos.presentation.components.SelectedSideCard
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -55,27 +58,15 @@ fun AddSidesSheet(
     )
     var selectedSides = remember { mutableStateListOf<String>() }
 
-//    val scope = rememberCoroutineScope()
     ModalBottomSheet(
         modifier = Modifier
             .fillMaxSize(),
         onDismissRequest = {
             onDismiss()
         },
-//        windowInsets = WindowInsets(0, 0, 0, 0),
         sheetState = sheetState
     ) {
-
         Scaffold(
-            topBar = {
-                Text(
-                    text = "Sides",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-//                            .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-            },
             bottomBar = {
                 OutlinedButton (
                     modifier = Modifier
@@ -112,18 +103,42 @@ fun AddSidesSheet(
                 ) {
                     stickyHeader {
                         Text(
-                            text = "Add Sides",
+                            text = "Add Sides (${item.numberOfSides})",
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier
-//                            .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
                         )
+                    }
+
+                    item {
+                        Column (
+                            modifier = Modifier
+                                .height(50.dp)
+                        ) {
+                            Row() {
+                                for (side in selectedSides) {
+                                    Column(
+                                        modifier = Modifier
+                                            .width(LocalConfiguration.current.screenWidthDp.dp / item.numberOfSides),
+                                    ) {
+                                        SelectedSideCard(
+                                            sideName = side
+                                        ) {
+                                            selectedSides.remove(side)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     items(item.sideOptions.size) { index ->
                         Card(
                             onClick = {
-                                selectedSides.add(item.sideOptions[index])
+                                if (selectedSides.size <= item.numberOfSides - 1) {
+                                    selectedSides.add(item.sideOptions[index])
+                                }
+
                             }
                         ) {
                             Text(item.sideOptions[index])

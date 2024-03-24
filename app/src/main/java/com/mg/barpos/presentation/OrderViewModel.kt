@@ -86,6 +86,7 @@ class OrderViewModel(
                     orderId = event.orderId,
                     itemName = event.itemName,
                     itemPrice = event.itemPrice,
+                    numberOfSides = event.numberOfSides,
                     sideOptions = event.sideOptions,
                     selectedSides = event.selectedSides
                 )

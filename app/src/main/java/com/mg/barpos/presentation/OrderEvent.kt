@@ -17,6 +17,7 @@ sealed interface ItemEvent {
         val orderId: Int,
         val itemName: String,
         val itemPrice: Double,
+        val numberOfSides: Int,
         val sideOptions: Array<String>,
         val selectedSides: Array<String>
     ): ItemEvent
