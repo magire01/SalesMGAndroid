@@ -56,6 +56,7 @@ import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.components.ItemRow
 import com.mg.barpos.presentation.components.SelectedSideCard
+import com.mg.barpos.presentation.components.SubmitButton
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -66,7 +67,7 @@ fun AddSidesSheet(
     onSubmitClick: (List<String>) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
+        skipPartiallyExpanded = true,
     )
     var selectedSides = remember { mutableStateListOf<String>() }
     val scope = rememberCoroutineScope()
@@ -81,107 +82,86 @@ fun AddSidesSheet(
         sheetState = sheetState
     ) {
         Scaffold(
+            Modifier
+                .padding(bottom = 60.dp)
+                .fillMaxSize(),
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             },
             bottomBar = {
-                OutlinedButton (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 100.dp,
-                            vertical = 20.dp,
-                        ),
-                    onClick = {
-                        onSubmitClick(selectedSides)
-                    }
-                ) {
-                    Text(
-                        modifier = Modifier.padding(24.dp),
-                        text = "Add To Order",
-                        style = MaterialTheme.typography.titleMedium,
-//                        color = Color.White
-                    )
+                SubmitButton(buttonTitle = "Add To Order") {
+                    onSubmitClick(selectedSides)
                 }
             }
         )
         { padding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(padding),
+            LazyColumn(
+                modifier = Modifier.padding(padding),
+                contentPadding = padding,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                LazyColumn(
-                    contentPadding = padding,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    stickyHeader {
-                        Text(
-                            text = "Add Sides (${item.numberOfSides})",
-                            style = MaterialTheme.typography.bodyLarge,
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                        )
-                    }
+                stickyHeader {
+                    Text(
+                        text = "Add Sides (${item.numberOfSides})",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                    )
+                }
 
-
-
-                    items(item.sideOptions.size) { index ->
-                        Card(
-                            modifier = Modifier
-                                .width(100.dp),
-                            onClick = {
-                                if (selectedSides.size <= item.numberOfSides - 1) {
-                                    selectedSides.add(item.sideOptions[index])
-                                } else {
-                                    scope.launch {
-                                        snackbarHostState.showSnackbar("Only ${item.numberOfSides} sides allowed")
-                                    }
+                items(item.sideOptions.size) { index ->
+                    Card(
+                        modifier = Modifier
+                            .width(200.dp),
+                        onClick = {
+                            if (selectedSides.size <= item.numberOfSides - 1) {
+                                selectedSides.add(item.sideOptions[index])
+                            } else {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar("Only ${item.numberOfSides} sides allowed")
                                 }
-
                             }
-                        ) {
-                            Row {
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.Start
-                                ) {
-                                    Text(item.sideOptions[index], textAlign = TextAlign.Center)
-                                }
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    horizontalAlignment = Alignment.End
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Add,
-                                        contentDescription = "Add Item",
-                                        tint = Color.Red
-                                    )
-                                }
+
+                        }
+                    ) {
+                        Row {
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(item.sideOptions[index], textAlign = TextAlign.Center)
+                            }
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Add,
+                                    contentDescription = "Add Item"
+                                )
                             }
                         }
                     }
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .height(50.dp)
-                                .fillMaxWidth()
-                        ) {
-                            Row() {
-                                for (side in selectedSides) {
-                                    Column(
-                                        modifier = Modifier
-                                            .width(LocalConfiguration.current.screenWidthDp.dp / item.numberOfSides),
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Row() {
+                            for (side in selectedSides) {
+                                Column(
+                                    modifier = Modifier
+                                        .width(LocalConfiguration.current.screenWidthDp.dp / item.numberOfSides),
+                                ) {
+                                    SelectedSideCard(
+                                        sideName = side
                                     ) {
-                                        SelectedSideCard(
-                                            sideName = side
-                                        ) {
-                                            selectedSides.remove(side)
-                                        }
+                                        selectedSides.remove(side)
                                     }
                                 }
                             }
