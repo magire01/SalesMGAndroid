@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Order(
     val orderName: String = "",
     val isTab: Boolean = false,
+    val orderTotal: Double,
 
     @PrimaryKey(autoGenerate = true)
     val orderNumber: Int = 0

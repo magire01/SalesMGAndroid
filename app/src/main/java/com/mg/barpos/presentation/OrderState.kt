@@ -1,6 +1,8 @@
 package com.mg.barpos.presentation
 
+import androidx.compose.runtime.MutableDoubleState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.mg.barpos.data.Item
@@ -12,6 +14,7 @@ data class OrderState(
     var orderNumber: Int = 0,
     val orderName: MutableState<String> = mutableStateOf(""),
     val isTab: MutableState<Boolean> = mutableStateOf(false),
+    var orderTotal: MutableState<Double> = mutableDoubleStateOf(0.00),
     val orderId: MutableState<Int> = mutableIntStateOf(0),
     val itemName: MutableState<String> = mutableStateOf(""),
     val itemPrice: MutableState<Int> = mutableIntStateOf(0),

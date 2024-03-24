@@ -8,6 +8,7 @@ sealed interface OrderEvent {
     data class SaveOrder(
         val orderName: String,
         val isTab: Boolean,
+        val orderTotal: Double,
     ): OrderEvent
 }
 
@@ -15,7 +16,7 @@ sealed interface ItemEvent {
     data class SaveItem(
         val orderId: Int,
         val itemName: String,
-        val itemPrice: Int,
+        val itemPrice: Double,
         val sideOptions: Array<String>,
         val selectedSides: Array<String>
     ): ItemEvent

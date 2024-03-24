@@ -59,6 +59,8 @@ import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.MenuCard
 import com.mg.barpos.presentation.components.SelectedItemRow
+import com.mg.barpos.presentation.components.SelectedTotalRow
+import com.mg.barpos.presentation.components.TotalRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,32 +176,11 @@ fun ItemMenu(
                 }
                 item {
                     if (!selectedItemList.isEmpty()) {
-                        HorizontalDivider()
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.Start
-                            ) {
-                                Text("Total:")
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                var total = 0
-                                for (x in selectedItemList) {
-                                    total += x.itemPrice
-                                }
-                                Text("$$total")
-                            }
+                        var total = 0.00
+                        for (x in selectedItemList) {
+                            total += x.itemPrice
                         }
+                        SelectedTotalRow(orderTotal = total)
                     }
                 }
             }

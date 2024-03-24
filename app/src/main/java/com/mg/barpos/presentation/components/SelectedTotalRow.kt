@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -17,46 +18,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ItemRow(
-    itemName: String,
-    itemPrice: String,
-    selectedSides: Array<String>
+fun SelectedTotalRow(
+    orderTotal: Double
 ) {
+    HorizontalDivider()
     Row(
         modifier = Modifier
-            .padding(4.dp)
-//            .height(30.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(4.dp),
+        verticalAlignment = Alignment.Bottom
     ) {
         Column(
             modifier = Modifier
                 .weight(1f),
             horizontalAlignment = Alignment.Start
         ) {
-            Text(text = itemName)
+            Text("Total:")
         }
-
         Column(
             modifier = Modifier
                 .weight(1f),
             horizontalAlignment = Alignment.End
         ) {
-            Text(text = itemPrice)
+            Text("$" + orderTotal)
         }
-    }
-    Row (
-        modifier = Modifier
-            .padding(4.dp)
-    ) {
-        if (selectedSides != emptyArray<String>()) {
-            for (side in selectedSides) {
-                Column (
-                    modifier = Modifier
-                        .padding(4.dp)
-                ) {
-                    Text("+$side")
-                }
-            }
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            horizontalAlignment = Alignment.End
+        ) {
+            //Blank Column for Alignment Purposes
         }
     }
 }

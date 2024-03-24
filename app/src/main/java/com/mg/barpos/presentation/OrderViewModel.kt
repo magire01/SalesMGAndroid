@@ -60,6 +60,7 @@ class OrderViewModel(
                 val order = Order(
                     orderName = event.orderName,
                     isTab = event.isTab,
+                    orderTotal = event.orderTotal
                 )
 
                 viewModelScope.launch() {
