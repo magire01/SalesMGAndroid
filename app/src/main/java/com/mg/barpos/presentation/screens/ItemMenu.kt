@@ -131,11 +131,12 @@ fun ItemMenu(
                             orderId = state.orders.size + 1,
                             itemName = items[index].itemName,
                             itemPrice = items[index].itemPrice,
+                            numberOfSides = items[index].numberOfSides,
                             sideOptions = items[index].sideOptions,
                             selectedSides = items[index].selectedSides,
 
                         )
-                        if (items[index].hasSides) {
+                        if (items[index].numberOfSides > 0) {
                             popupControl = true
                         } else {
                             selectedItem?.let {
@@ -144,6 +145,7 @@ fun ItemMenu(
                                         orderId = state.orders.size + 1,
                                         itemName = it.itemName,
                                         itemPrice = it.itemPrice,
+                                        numberOfSides = it.numberOfSides,
                                         sideOptions = it.sideOptions,
                                         selectedSides = it.selectedSides,
                                     )
@@ -198,6 +200,7 @@ fun ItemMenu(
                                     orderId = state.orders.size + 1,
                                     itemName = it.itemName,
                                     itemPrice = it.itemPrice,
+                                    numberOfSides = it.numberOfSides,
                                     sideOptions = it.sideOptions,
                                     selectedSides = list.toTypedArray(),
                                 )

@@ -50,6 +50,7 @@ import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.ItemRow
+import com.mg.barpos.presentation.components.SubmitButton
 import com.mg.barpos.presentation.components.TotalRow
 import kotlin.reflect.KFunction1
 
@@ -103,44 +104,30 @@ fun ConfirmOrderScreen(
             }
         },
         bottomBar = {
-            OutlinedButton (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 100.dp,
-                        vertical = 20.dp,
-                    ),
-                onClick = {
-                    // Create Order data
-                    onEvent(
-                        OrderEvent.SaveOrder(
-                            orderName = state.orderName.value,
-                            isTab = false,
-                            orderTotal = orderTotal
+            SubmitButton(buttonTitle = "Submit Order") {
+                // Create Order data
+                onEvent(
+                    OrderEvent.SaveOrder(
+                        orderName = state.orderName.value,
+                        isTab = false,
+                        orderTotal = orderTotal
+                    )
+                )
+
+                // Create Item data
+                for (item in state.selectedItems) {
+                    onItemEvent(
+                        ItemEvent.SaveItem(
+                            orderId = state.orderNumber,
+                            itemName = item.itemName,
+                            itemPrice = item.itemPrice,
+                            numberOfSides = item.numberOfSides,
+                            sideOptions = item.sideOptions,
+                            selectedSides = item.selectedSides
                         )
                     )
-
-                    // Create Item data
-                    for (item in state.selectedItems) {
-                        onItemEvent(
-                            ItemEvent.SaveItem(
-                                orderId = state.orderNumber,
-                                itemName = item.itemName,
-                                itemPrice = item.itemPrice,
-                                sideOptions = item.sideOptions,
-                                selectedSides = item.selectedSides
-                            )
-                        )
-                    }
-                    navController.popBackStack()
                 }
-            ) {
-                Text(
-                    modifier = Modifier.padding(24.dp),
-                    text = "Submit Order",
-                    style = MaterialTheme.typography.titleMedium,
-//                        color = Color.White
-                )
+                navController.popBackStack()
             }
         }
     ) { paddingValues ->

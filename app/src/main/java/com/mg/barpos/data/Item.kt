@@ -9,14 +9,13 @@ data class Item(
     val orderId: Int,
     val itemName: String,
     val itemPrice: Double,
+    val numberOfSides: Int,
     val sideOptions: Array<String>,
     val selectedSides: Array<String>,
 
 
     @PrimaryKey(autoGenerate = true)
     val itemNumber: Int = 0,
-) {
-
-}
+)
 
 

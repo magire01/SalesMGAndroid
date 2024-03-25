@@ -38,11 +38,12 @@ class MainActivity : ComponentActivity() {
     val sideOptions = arrayOf("Fries", "Mac", "Beans", "Puppies", "Slaw")
 
     val items = arrayOf(
-        MenuItem("Fish Sand Platter", 10.00, true, sideOptions = sideOptions, selectedSides = emptyArray()),
-        MenuItem("Shrimp Platter", 11.00, true, sideOptions = sideOptions, selectedSides = emptyArray()),
-        MenuItem("Tenders Platter", 9.00, true, sideOptions = sideOptions, selectedSides = emptyArray()),
-        MenuItem("Mozz Sticks", 5.00, false, sideOptions = emptyArray(), selectedSides = emptyArray()),
-        MenuItem("Extra Shrimp", 6.00, false, sideOptions = emptyArray(), selectedSides = emptyArray()),
+        MenuItem("Fish Sand Platter", 10.00, 3, sideOptions = sideOptions, selectedSides = emptyArray()),
+        MenuItem("Shrimp Platter", 11.00, 3, sideOptions = sideOptions, selectedSides = emptyArray()),
+        MenuItem("Tenders Platter", 9.00, 3, sideOptions = sideOptions, selectedSides = emptyArray()),
+        MenuItem("Tenders Basket", 9.00, 1, sideOptions = sideOptions, selectedSides = emptyArray()),
+        MenuItem("Mozz Sticks", 5.00, 0, sideOptions = emptyArray(), selectedSides = emptyArray()),
+        MenuItem("Extra Shrimp", 6.00, 0, sideOptions = emptyArray(), selectedSides = emptyArray()),
         )
 
     private val database by lazy {
