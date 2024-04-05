@@ -17,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,7 +35,9 @@ import androidx.navigation.NavHostController
 import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderState
+import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.components.ItemRow
+import com.mg.barpos.presentation.components.TopBar
 import com.mg.barpos.presentation.components.TotalRow
 import kotlin.reflect.KFunction1
 
@@ -49,41 +50,17 @@ fun SavedOrderDetails(
 ) {
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
-                        contentDescription = "Sort Notes",
-                        modifier = Modifier.size(35.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
+            TopBar(
+                title = "Order # ${state.selectedOrderNumber.value}",
+                button = {
+                    IconButton(
+                        description = "Back",
+                        imageVector = Icons.Rounded.ArrowBack
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    modifier = Modifier.weight(1f),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
-                IconButton(onClick = {  }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Sort,
-                        contentDescription = "Sort Notes",
-                        modifier = Modifier.size(35.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+            )
         }
     ) { paddingValues ->
         onEvent(ItemEvent.GetItemById(state.selectedOrderNumber.value))
@@ -96,7 +73,7 @@ fun SavedOrderDetails(
             stickyHeader {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Order #" + state.selectedOrderNumber.value.toString(),
+                    text = state.selectedOrderName.value,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }
