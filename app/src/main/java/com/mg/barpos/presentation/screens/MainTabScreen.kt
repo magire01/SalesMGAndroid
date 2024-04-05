@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -22,18 +21,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mg.barpos.data.MenuItem
-import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.NavigationItem
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 
-/*
-state = state,
-navController = navController,
-onEvent = viewModel::onEvent,
-items = items,
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainTabScreen(
     state: OrderState,

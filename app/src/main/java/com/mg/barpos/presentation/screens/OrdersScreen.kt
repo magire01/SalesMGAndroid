@@ -39,6 +39,7 @@ import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
+import com.mg.barpos.presentation.components.TopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,31 +50,10 @@ fun OrdersScreen(
 ) {
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    modifier = Modifier.weight(1f),
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onPrimary
-                )
-
-                IconButton(onClick = {  }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Sort,
-                        contentDescription = "Sort Notes",
-                        modifier = Modifier.size(35.dp),
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+            TopBar(
+                title = "Orders",
+                button = null
+            )
         },
     ) { paddingValues ->
         Row {
@@ -93,6 +73,7 @@ fun OrdersScreen(
                                 .height(60.dp),
                             onClick = {
                                 state.selectedOrderNumber.value = state.orders[index].orderNumber
+                                state.selectedOrderName.value = state.orders[index].orderName
                                 state.orderTotal.value = state.orders[index].orderTotal
                                 navController.navigate("SavedOrderDetails")
                             }
