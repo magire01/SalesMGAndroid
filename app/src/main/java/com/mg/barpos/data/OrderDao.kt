@@ -31,8 +31,18 @@ interface OrderDao {
     @Query("SELECT * FROM `Order`")
     fun getOrderWithItems(): Flow<List<OrderWithItems>>
 
-
     @Query("DELETE FROM `Order`")
     suspend fun nukeTable()
 
+    @Upsert
+    suspend fun upsertStoredMenuItem(item: StoredMenuItem)
+
+    @Query("SELECT * FROM `StoredMenuItem`")
+    fun getStoredMenuItems(): Flow<List<StoredMenuItem>>
+
+    @Upsert
+    suspend fun upsertStoredExtraItem(item: StoredExtraItem)
+
+    @Query("SELECT * FROM `StoredExtraItem`")
+    fun getStoredExtraItems(): Flow<List<StoredExtraItem>>
 }

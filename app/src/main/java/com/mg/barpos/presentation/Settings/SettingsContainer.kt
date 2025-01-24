@@ -1,4 +1,4 @@
-package com.mg.barpos.presentation.screens
+package com.mg.barpos.presentation.Settings
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,22 +20,27 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.mg.barpos.data.MenuItem
+import androidx.navigation.compose.rememberNavController
 import com.mg.barpos.presentation.NavigationItem
-import com.mg.barpos.presentation.OrderEvent
-import com.mg.barpos.presentation.OrderState
+import com.mg.barpos.presentation.Settings.State.EditMenuState
+import com.mg.barpos.presentation.Settings.State.StoredMenuItemEvent
+import com.mg.barpos.presentation.Settings.View.EditExtraItems
+import com.mg.barpos.presentation.Settings.View.EditMenu
+import com.mg.barpos.presentation.Settings.View.EditPrinter
 
 @Composable
-fun MainTabScreen(
-    state: OrderState,
+fun SettingsContainer(
     navController: NavController,
-    tabController: NavHostController,
-    onEvent: (OrderEvent) -> Unit,
+    state: EditMenuState,
+    onEvent: (StoredMenuItemEvent) -> Unit
 ) {
+    val tabController = rememberNavController()
+
+
     Scaffold(
         bottomBar = {
             BottomAppBar(modifier = Modifier) {
-                BottomNavigationBar(navController = tabController)
+                SettingsNavigationBar(navController = tabController)
             }
         }
     ) { innerPadding ->
@@ -49,10 +54,10 @@ fun MainTabScreen(
                 )
             )
         ) {
-            Navigations(
-                state = state,
-                navController = navController,
+            SettingsNavigation(
                 tabController = tabController,
+                navController = navController,
+                state = state,
                 onEvent = onEvent,
             )
         }
@@ -60,38 +65,44 @@ fun MainTabScreen(
 }
 
 @Composable
-fun Navigations(
-    state: OrderState,
+fun SettingsNavigation(
     navController: NavController,
     tabController: NavHostController,
-    onEvent: (OrderEvent) -> Unit,
+    state: EditMenuState,
+    onEvent: (StoredMenuItemEvent) -> Unit,
 ) {
-    NavHost(tabController, startDestination = NavigationItem.OrdersScreen.route) {
-        composable(NavigationItem.OrdersScreen.route) {
-            OrdersScreen(
-                state = state,
+    NavHost(tabController, startDestination = "CreateMenu") {
+        composable(NavigationItem.EditMenu.route) {
+            EditMenu(
                 navController = navController,
+                state = state,
                 onEvent = onEvent,
             )
         }
-        composable(NavigationItem.ItemMenu.route) {
-            ItemMenu(
-                state = state,
+
+        composable(NavigationItem.EditExtras.route) {
+            EditExtraItems(
                 navController = navController,
+                state = state,
+                onEvent = onEvent,
             )
+        }
+
+        composable("EditPrinter") {
+            EditPrinter(navController = navController)
         }
     }
 }
 
-
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun SettingsNavigationBar(navController: NavHostController) {
     val items = listOf(
-        NavigationItem.OrdersScreen,
-        NavigationItem.ItemMenu,
+        NavigationItem.EditMenu,
+        NavigationItem.EditExtras,
+        NavigationItem.EditPrinter
     )
     var selectedItem by remember { mutableStateOf(0) }
-    var currentRoute by remember { mutableStateOf(NavigationItem.OrdersScreen.route) }
+    var currentRoute by remember { mutableStateOf(NavigationItem.EditMenu.route) }
 
     items.forEachIndexed { index, navigationItem ->
         if (navigationItem.route == currentRoute) {

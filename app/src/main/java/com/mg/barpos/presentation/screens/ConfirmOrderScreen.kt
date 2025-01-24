@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,7 +43,8 @@ fun ConfirmOrderScreen(
     Scaffold(
         topBar = {
             TopBar(
-                title = "Orders"
+                title = "Orders",
+                navController = navController
             ) {
                 IconButton(
                     description = "Back",
@@ -80,46 +82,50 @@ fun ConfirmOrderScreen(
             }
         }
     ) { paddingValues ->
-        LazyColumn(
-            contentPadding = paddingValues,
-            modifier = Modifier
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            stickyHeader {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Order #" + state.orderNumber.toString(),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(50.dp),
-                    value = state.orderName.value,
-                    singleLine = true,
-                    onValueChange = {
-                        state.orderName.value = it
-                    },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    textStyle = TextStyle(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 17.sp
-                    ),
-                    label = { Text("Customer Name") }
-                )
-            }
-            items(state.selectedItems.size) { index ->
-                ItemRow(
-                    itemName = state.selectedItems[index].itemName,
-                    itemPrice = state.selectedItems[index].itemPrice.toString(),
-                    selectedSides = state.selectedItems[index].selectedSides
-                )
-                orderTotal += state.selectedItems[index].itemPrice
+        if (state.isLoading.value) {
+            CircularProgressIndicator()
+        } else {
+            LazyColumn(
+                contentPadding = paddingValues,
+                modifier = Modifier
+                    .padding(8.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                stickyHeader {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Order #" + state.orderNumber.toString(),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(50.dp),
+                        value = state.orderName.value,
+                        singleLine = true,
+                        onValueChange = {
+                            state.orderName.value = it
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        textStyle = TextStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 17.sp
+                        ),
+                        label = { Text("Customer Name") }
+                    )
+                }
+                items(state.selectedItems.size) { index ->
+                    ItemRow(
+                        itemName = state.selectedItems[index].itemName,
+                        itemPrice = state.selectedItems[index].itemPrice.toString(),
+                        selectedSides = state.selectedItems[index].selectedSides
+                    )
+                    orderTotal += state.selectedItems[index].itemPrice
 
-            }
-            item {
-                TotalRow(orderTotal = orderTotal)
+                }
+                item {
+                    TotalRow(orderTotal = orderTotal)
+                }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.mg.barpos.presentation.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -30,21 +32,22 @@ import com.mg.barpos.presentation.components.SelectedItemRow
 import com.mg.barpos.presentation.components.SelectedTotalRow
 import com.mg.barpos.presentation.components.TopBar
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ItemMenu(
     state: OrderState,
     navController: NavController,
-    items: Array<MenuItem>
 ) {
     var selectedItemList = remember { mutableStateListOf<Item>() }
     var popupControl by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<Item?>(null) }
+
     Scaffold(
         topBar = {
             TopBar(
                 title = "Menu",
-                button = null
+                button = null,
+                navController = navController
             )
         },
 
@@ -68,42 +71,47 @@ fun ItemMenu(
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                items(items.size) { index ->
-                    MenuCard(
-                        itemName = items[index].itemName,
-                        itemPrice = items[index].itemPrice.toString()
-                    ) {
-                        selectedItem = Item(
-                            orderId = state.orders.size + 1,
-                            itemName = items[index].itemName,
-                            itemPrice = items[index].itemPrice,
-                            numberOfSides = items[index].numberOfSides,
-                            sideOptions = items[index].sideOptions,
-                            selectedSides = items[index].selectedSides,
+                state.menuList.forEach { category ->
+                    stickyHeader {
+                        Row {
+                            Text(text = category.categoryName)
+                        }
+                    }
+                    items(category.menuList.size) { index ->
 
-                        )
-                        if (items[index].numberOfSides > 0) {
-                            popupControl = true
-                        } else {
-                            selectedItem?.let {
-                                selectedItemList.add(
-                                    Item(
-                                        orderId = state.orders.size + 1,
-                                        itemName = it.itemName,
-                                        itemPrice = it.itemPrice,
-                                        numberOfSides = it.numberOfSides,
-                                        sideOptions = it.sideOptions,
-                                        selectedSides = it.selectedSides,
+                        MenuCard(
+                            itemName = category.menuList[index].itemName,
+                            itemPrice = category.menuList[index].itemPrice.toString()
+                        ) {
+                            selectedItem = Item(
+                                orderId = state.orders.size + 1,
+                                itemName = category.menuList[index].itemName,
+                                itemPrice = category.menuList[index].itemPrice,
+                                numberOfSides = category.menuList[index].numberOfSides,
+                                sideOptions = category.menuList[index].sideOptions,
+                                selectedSides = category.menuList[index].selectedSides,
+                            )
+                            if (category.menuList[index].numberOfSides > 0) {
+                                popupControl = true
+                            } else {
+                                selectedItem?.let {
+                                    selectedItemList.add(
+                                        Item(
+                                            orderId = state.orders.size + 1,
+                                            itemName = it.itemName,
+                                            itemPrice = it.itemPrice,
+                                            numberOfSides = it.numberOfSides,
+                                            sideOptions = it.sideOptions,
+                                            selectedSides = it.selectedSides,
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
-
-
-
                     }
                 }
             }
+
 
             LazyColumn(
                 contentPadding = paddingValues,

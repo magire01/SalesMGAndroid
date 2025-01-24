@@ -52,6 +52,7 @@ fun SavedOrderDetails(
         topBar = {
             TopBar(
                 title = "Order # ${state.selectedOrderNumber.value}",
+                navController = navController,
                 button = {
                     IconButton(
                         description = "Back",

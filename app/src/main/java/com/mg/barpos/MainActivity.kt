@@ -1,11 +1,13 @@
 package com.mg.barpos
 
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,20 +19,23 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
-import androidx.room.TypeConverters
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.OrderDatabase
 import com.mg.barpos.presentation.screens.ItemMenu
 import com.mg.barpos.presentation.OrderViewModel
+import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
+import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.screens.ConfirmOrderScreen
 import com.mg.barpos.presentation.screens.MainTabScreen
 import com.mg.barpos.presentation.screens.OrdersScreen
 import com.mg.barpos.presentation.screens.SavedOrderDetails
+import com.mg.barpos.presentation.Settings.SettingsContainer
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,6 +71,16 @@ class MainActivity : ComponentActivity() {
             }
         }
     )
+
+    private val editMenuViewModel by viewModels<EditMenuViewModel> (
+        factoryProducer = {
+            object: ViewModelProvider.Factory {
+                override fun<T: ViewModel> create(modelClass: Class<T>): T {
+                    return EditMenuViewModel(database.dao) as T
+                }
+            }
+        }
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -77,18 +92,25 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val state by viewModel.state.collectAsState()
+                    val editMenuState by editMenuViewModel.uiState.collectAsState()
                     val navController = rememberNavController()
                     val tabController = rememberNavController()
 
 
-                    NavHost(navController= navController, startDestination = "MainTabScreen") {
+                    NavHost(
+                        navController= navController,
+                        startDestination = "MainTabScreen",
+                        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) },
+                        exitTransition =  { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) },
+                        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) },
+                        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) },
+                    ) {
                         composable("MainTabScreen") {
                             MainTabScreen(
                                 state = state,
                                 navController = navController,
                                 tabController = tabController,
                                 onEvent = viewModel::onEvent,
-                                items = items,
                             )
                         }
                         composable("OrdersScreen") {
@@ -101,8 +123,7 @@ class MainActivity : ComponentActivity() {
                         composable("ItemMenu") {
                             ItemMenu(
                                 state = state,
-                                navController = navController,
-                                items = items)
+                                navController = navController)
                         }
                         composable("SavedOrderDetails") {
                             SavedOrderDetails(
@@ -118,6 +139,14 @@ class MainActivity : ComponentActivity() {
                                 onItemEvent = viewModel::onItemEvent
                             )
                         }
+
+                        composable("SettingsContainer") {
+                            SettingsContainer(
+                                navController = navController,
+                                state = editMenuState,
+                                onEvent = editMenuViewModel::onEvent,
+                            )
+                        }
                     }
 
                 }
@@ -129,6 +158,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting(name: String) {
     Text(text = "Hello $name!")
+}
+
+@Composable
+fun BackButton(navController: NavController) {
+    IconButton(
+        description = "Back",
+        imageVector = Icons.Rounded.ArrowBack
+    ) {
+        navController.popBackStack()
+    }
 }
 
 //@Preview(showBackground = true)

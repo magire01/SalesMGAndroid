@@ -52,7 +52,8 @@ fun OrdersScreen(
         topBar = {
             TopBar(
                 title = "Orders",
-                button = null
+                button = null,
+                navController = navController
             )
         },
     ) { paddingValues ->

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mg.barpos.data.Item
+import com.mg.barpos.data.MenuList.MenuCategory
 import com.mg.barpos.data.Order
 import com.mg.barpos.data.OrderDao
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,17 +31,20 @@ class OrderViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-
     private var orders =
         dao.getOrders().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    val _state = MutableStateFlow(OrderState())
+    private var storedMenuItems = dao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    private var isLoading = mutableStateOf(false)
+    private val _state = MutableStateFlow(OrderState())
     val state =
-        combine(_state, orders, items, orderId) { state, orders, items, orderId ->
+        combine(_state, orders, items, orderId, storedMenuItems) { state, orders, items, orderId, storedMenuItems ->
             state.copy(
                 orders = orders,
                 items = items,
-                selectedOrderNumber = mutableIntStateOf(orderId)
+                selectedOrderNumber = mutableIntStateOf(orderId),
+                menuList = createMenuList(),
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), OrderState())
 
@@ -55,7 +59,10 @@ class OrderViewModel(
                 )
 
                 viewModelScope.launch() {
+                    state.value.isLoading.value = true
                     dao.upsertOrder(order)
+                    state.value.isLoading.value = false
+
                 }
                 _state.update {
                     it.copy(
@@ -103,5 +110,28 @@ class OrderViewModel(
 
             else -> {}
         }
+    }
+
+    private fun createMenuList(): MutableList<MenuCategory> {
+        var menuCategoryList: MutableList<MenuCategory> = mutableListOf()
+        var categories = storedMenuItems.value.distinctBy { it.category }
+        var categoryList: MutableList<String> = mutableListOf()
+
+        for (category in categories) {
+            categoryList += category.category
+        }
+
+        for (category in categoryList) {
+            var newList = storedMenuItems.value.filter { it.category == category }
+
+            var newCategory = MenuCategory(
+                numberPriority = categoryList.size,
+                categoryName = category,
+                menuList = newList,
+            )
+            menuCategoryList.add(newCategory)
+        }
+
+        return menuCategoryList
     }
 }
