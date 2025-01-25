@@ -1,10 +1,13 @@
-package com.mg.barpos.data
+package com.mg.barpos.data.Orders
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
+import com.mg.barpos.data.OrderWithItems
+import com.mg.barpos.data.StoredExtraItem
+import com.mg.barpos.data.StoredMenuItem
 import kotlinx.coroutines.flow.Flow
 
 

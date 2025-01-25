@@ -61,23 +61,11 @@ fun ConfirmOrderScreen(
                     OrderEvent.SaveOrder(
                         orderName = state.orderName.value,
                         isTab = false,
-                        orderTotal = orderTotal
+                        orderTotal = orderTotal,
+                        items = state.selectedItems
                     )
                 )
 
-                // Create Item data
-                for (item in state.selectedItems) {
-                    onItemEvent(
-                        ItemEvent.SaveItem(
-                            orderId = state.orderNumber,
-                            itemName = item.itemName,
-                            itemPrice = item.itemPrice,
-                            numberOfSides = item.numberOfSides,
-                            sideOptions = item.sideOptions,
-                            selectedSides = item.selectedSides
-                        )
-                    )
-                }
                 navController.popBackStack()
             }
         }

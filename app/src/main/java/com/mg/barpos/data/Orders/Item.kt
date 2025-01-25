@@ -1,4 +1,4 @@
-package com.mg.barpos.data
+package com.mg.barpos.data.Orders
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

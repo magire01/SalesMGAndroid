@@ -26,10 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
-import com.mg.barpos.data.OrderDao
 import com.mg.barpos.data.OrderDatabase
+import com.mg.barpos.data.Orders.OrderService
 import com.mg.barpos.presentation.MenuViewModel
-import com.mg.barpos.presentation.screens.ItemMenu
 import com.mg.barpos.presentation.OrderViewModel
 import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
 import com.mg.barpos.presentation.components.IconButton
@@ -64,11 +63,13 @@ class MainActivity : ComponentActivity() {
             .build()
     }
 
+    private val orderService by lazy { OrderService(database.orderDao) }
+
     private val viewModel by viewModels<OrderViewModel> (
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return OrderViewModel(database.dao) as T
+                    return OrderViewModel(orderService, database.menuDao) as T
                 }
             }
         }
@@ -78,7 +79,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return MenuViewModel(database.dao) as T
+                    return MenuViewModel(database.menuDao) as T
                 }
             }
         }
@@ -88,7 +89,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return EditMenuViewModel(database.dao) as T
+                    return EditMenuViewModel(database.menuDao) as T
                 }
             }
         }

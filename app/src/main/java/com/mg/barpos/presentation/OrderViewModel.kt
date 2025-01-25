@@ -4,11 +4,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mg.barpos.data.Item
+import com.mg.barpos.data.Orders.Item
 import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
-import com.mg.barpos.data.Order
-import com.mg.barpos.data.OrderDao
+import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.Orders.Order
+import com.mg.barpos.data.Orders.OrderService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OrderViewModel(
-    private val dao: OrderDao
+    private val orderService: OrderService, menuDao: MenuItemDao
 ) : ViewModel() {
 
 
@@ -26,19 +27,19 @@ class OrderViewModel(
 
     private var items = orderId.flatMapLatest { id ->
         if (id > 0) {
-            dao.getItemsById(id)
+            orderService.getItemsById(id)
         } else {
-            dao.getItems()
+            orderService.getItems
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var orders =
-        dao.getOrders().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        orderService.getOrders.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private var storedMenuItems = dao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    private var storedMenuItems = menuDao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var extraList =
-        dao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuDao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var isLoading = mutableStateOf(false)
 
@@ -64,9 +65,11 @@ class OrderViewModel(
                     orderTotal = event.orderTotal
                 )
 
+                val itemList = event.items
+
                 viewModelScope.launch() {
                     state.value.isLoading.value = true
-                    dao.upsertOrder(order)
+                    orderService.createOrder(order, itemList)
                     state.value.isLoading.value = false
 
                 }
@@ -83,31 +86,6 @@ class OrderViewModel(
 
     fun onItemEvent(event: ItemEvent) {
         when (event) {
-
-            is ItemEvent.SaveItem -> {
-
-                val item = Item(
-                    orderId = event.orderId,
-                    itemName = event.itemName,
-                    itemPrice = event.itemPrice,
-                    numberOfSides = event.numberOfSides,
-                    sideOptions = event.sideOptions,
-                    selectedSides = event.selectedSides
-                )
-
-                viewModelScope.launch {
-                    dao.upsertItem(item)
-                }
-                _state.update {
-                    it.copy(
-                        orderId = mutableIntStateOf(0),
-                        itemName = mutableStateOf(""),
-                        itemPrice = mutableIntStateOf(0),
-                        itemNumber = mutableIntStateOf(0),
-
-                    )
-                }
-            }
 
             ItemEvent.GetItemById(id = state.value.selectedOrderNumber.value) -> {
                 orderId.value = state.value.selectedOrderNumber.value

@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.mg.barpos.data.Item
+import com.mg.barpos.data.Orders.Item
 import com.mg.barpos.presentation.MenuState
 import com.mg.barpos.presentation.components.SelectedSideCard
 import com.mg.barpos.presentation.components.SubmitButton

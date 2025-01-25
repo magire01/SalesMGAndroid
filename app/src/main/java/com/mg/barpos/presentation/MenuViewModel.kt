@@ -1,31 +1,25 @@
 package com.mg.barpos.presentation
 
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mg.barpos.data.Item
 import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
-import com.mg.barpos.data.Order
-import com.mg.barpos.data.OrderDao
+import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.Orders.OrderDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class MenuViewModel(
-    private val dao: OrderDao
+    private val menuItemDao: MenuItemDao
 ) : ViewModel() {
     private var orderId = MutableStateFlow(0)
 
-    private var storedMenuItems = dao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    private var storedMenuItems = menuItemDao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var extraList =
-        dao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuItemDao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _state = MutableStateFlow(MenuState())
     val state =

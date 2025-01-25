@@ -3,6 +3,10 @@ package com.mg.barpos.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.Orders.Item
+import com.mg.barpos.data.Orders.Order
+import com.mg.barpos.data.Orders.OrderDao
 
 @Database(
     entities = [Order::class, Item::class, StoredMenuItem::class, StoredExtraItem::class],
@@ -11,5 +15,7 @@ import androidx.room.TypeConverters
 )
 @TypeConverters(Converter::class)
 abstract class OrderDatabase: RoomDatabase() {
-    abstract val dao: OrderDao
+    abstract val orderDao: OrderDao
+    abstract val menuDao: MenuItemDao
+
 }
