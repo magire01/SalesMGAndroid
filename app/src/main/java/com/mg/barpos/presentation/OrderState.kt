@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.mg.barpos.data.Item
+import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
 import com.mg.barpos.data.Order
 import com.mg.barpos.data.StoredMenuItem
@@ -24,5 +25,6 @@ data class OrderState(
     var selectedOrderName: MutableState<String> = mutableStateOf(""),
     var selectedItems: List<Item> = emptyList(),
     val menuList: List<MenuCategory> = emptyList(),
+    val extraList: List<ExtraCategory> = emptyList(),
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
 )

@@ -26,7 +26,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
+import com.mg.barpos.data.OrderDao
 import com.mg.barpos.data.OrderDatabase
+import com.mg.barpos.presentation.MenuViewModel
 import com.mg.barpos.presentation.screens.ItemMenu
 import com.mg.barpos.presentation.OrderViewModel
 import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
@@ -72,6 +74,16 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    private val menuViewModel by viewModels<MenuViewModel> (
+        factoryProducer = {
+            object: ViewModelProvider.Factory {
+                override fun<T: ViewModel> create(modelClass: Class<T>): T {
+                    return MenuViewModel(database.dao) as T
+                }
+            }
+        }
+    )
+
     private val editMenuViewModel by viewModels<EditMenuViewModel> (
         factoryProducer = {
             object: ViewModelProvider.Factory {
@@ -92,6 +104,7 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val state by viewModel.state.collectAsState()
+                    val menuState by menuViewModel.state.collectAsState()
                     val editMenuState by editMenuViewModel.uiState.collectAsState()
                     val navController = rememberNavController()
                     val tabController = rememberNavController()
@@ -108,6 +121,7 @@ class MainActivity : ComponentActivity() {
                         composable("MainTabScreen") {
                             MainTabScreen(
                                 state = state,
+                                menuState = menuState,
                                 navController = navController,
                                 tabController = tabController,
                                 onEvent = viewModel::onEvent,
@@ -120,11 +134,11 @@ class MainActivity : ComponentActivity() {
                                 onEvent = viewModel::onEvent,
                             )
                         }
-                        composable("ItemMenu") {
-                            ItemMenu(
-                                state = state,
-                                navController = navController)
-                        }
+//                        composable("ItemMenu") {
+//                            ItemMenu(
+//                                state = state,
+//                                navController = navController)
+//                        }
                         composable("SavedOrderDetails") {
                             SavedOrderDetails(
                                 state = state,

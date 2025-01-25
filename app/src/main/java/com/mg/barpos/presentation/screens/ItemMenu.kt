@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mg.barpos.data.Item
 import com.mg.barpos.data.MenuItem
+import com.mg.barpos.presentation.MenuState
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.MenuCard
 import com.mg.barpos.presentation.components.SelectedItemRow
@@ -36,6 +37,7 @@ import com.mg.barpos.presentation.components.TopBar
 @Composable
 fun ItemMenu(
     state: OrderState,
+    menuState: MenuState,
     navController: NavController,
 ) {
     var selectedItemList = remember { mutableStateListOf<Item>() }
@@ -71,7 +73,7 @@ fun ItemMenu(
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                state.menuList.forEach { category ->
+                menuState.menuList.forEach { category ->
                     stickyHeader {
                         Row {
                             Text(text = category.categoryName)
@@ -144,6 +146,7 @@ fun ItemMenu(
             if (popupControl) {
                 selectedItem?.let {
                     AddSidesSheet(
+                        menuState = menuState,
                         item = it,
                         onDismiss = {
                             popupControl = false
