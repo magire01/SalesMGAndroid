@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
 import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.Orders.OrderDao
 import com.mg.barpos.data.StoredExtraItem
 import com.mg.barpos.data.StoredMenuItem
@@ -18,14 +19,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class EditMenuViewModel(
-    private val menuDao: MenuItemDao
+    private val menuService: MenuService
 ) : ViewModel() {
 
     private var itemList =
-        menuDao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuService.itemList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var extraList =
-        menuDao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuService.extraList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
 
     private val _uiState = MutableStateFlow(EditMenuState())
@@ -53,7 +54,7 @@ class EditMenuViewModel(
                 )
 
                 viewModelScope.launch() {
-                    menuDao.upsertStoredMenuItem(menuItem)
+                    menuService.saveMenuItem(menuItem)
                 }
                 _uiState.update {
                     it.copy(
@@ -71,7 +72,7 @@ class EditMenuViewModel(
                 )
 
                 viewModelScope.launch() {
-                    menuDao.upsertStoredExtraItem(extraItem)
+                    menuService.saveExtraItem(extraItem)
                 }
                 _uiState.update {
                     it.copy(

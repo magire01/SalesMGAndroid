@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
 import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.Orders.OrderDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,14 +13,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 class MenuViewModel(
-    private val menuItemDao: MenuItemDao
+    private val menuService: MenuService
 ) : ViewModel() {
     private var orderId = MutableStateFlow(0)
 
-    private var storedMenuItems = menuItemDao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    private var storedMenuItems = menuService.itemList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var extraList =
-        menuItemDao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuService.extraList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private val _state = MutableStateFlow(MenuState())
     val state =

@@ -8,6 +8,7 @@ import com.mg.barpos.data.Orders.Item
 import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.MenuList.MenuCategory
 import com.mg.barpos.data.MenuList.MenuItemDao
+import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.Orders.Order
 import com.mg.barpos.data.Orders.OrderService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OrderViewModel(
-    private val orderService: OrderService, menuDao: MenuItemDao
+    private val orderService: OrderService, menuService: MenuService
 ) : ViewModel() {
 
 
@@ -36,10 +37,10 @@ class OrderViewModel(
     private var orders =
         orderService.getOrders.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
-    private var storedMenuItems = menuDao.getStoredMenuItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+    private var storedMenuItems = menuService.itemList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var extraList =
-        menuDao.getStoredExtraItems().stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+        menuService.extraList.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
 
     private var isLoading = mutableStateOf(false)
 
@@ -68,10 +69,7 @@ class OrderViewModel(
                 val itemList = event.items
 
                 viewModelScope.launch() {
-                    state.value.isLoading.value = true
                     orderService.createOrder(order, itemList)
-                    state.value.isLoading.value = false
-
                 }
                 _state.update {
                     it.copy(

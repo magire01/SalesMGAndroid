@@ -26,16 +26,17 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
+import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.OrderDatabase
 import com.mg.barpos.data.Orders.OrderService
 import com.mg.barpos.presentation.MenuViewModel
 import com.mg.barpos.presentation.OrderViewModel
 import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
 import com.mg.barpos.presentation.components.IconButton
-import com.mg.barpos.presentation.screens.ConfirmOrderScreen
-import com.mg.barpos.presentation.screens.MainTabScreen
-import com.mg.barpos.presentation.screens.OrdersScreen
-import com.mg.barpos.presentation.screens.SavedOrderDetails
+import com.mg.barpos.presentation.OrderContainer.ConfirmOrderScreen
+import com.mg.barpos.presentation.OrderContainer.MainTabScreen
+import com.mg.barpos.presentation.OrderContainer.OrdersScreen
+import com.mg.barpos.presentation.OrderContainer.SavedOrderDetails
 import com.mg.barpos.presentation.Settings.SettingsContainer
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
 
@@ -64,12 +65,14 @@ class MainActivity : ComponentActivity() {
     }
 
     private val orderService by lazy { OrderService(database.orderDao) }
+    private val menuService by lazy { MenuService(database.menuDao) }
+
 
     private val viewModel by viewModels<OrderViewModel> (
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return OrderViewModel(orderService, database.menuDao) as T
+                    return OrderViewModel(orderService, menuService) as T
                 }
             }
         }
@@ -79,7 +82,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return MenuViewModel(database.menuDao) as T
+                    return MenuViewModel(menuService) as T
                 }
             }
         }
@@ -89,7 +92,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return EditMenuViewModel(database.menuDao) as T
+                    return EditMenuViewModel(menuService) as T
                 }
             }
         }

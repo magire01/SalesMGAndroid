@@ -1,4 +1,4 @@
-package com.mg.barpos.presentation.screens
+package com.mg.barpos.presentation.OrderContainer
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
