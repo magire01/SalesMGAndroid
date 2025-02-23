@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
+import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersState
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.components.ItemRow
@@ -44,7 +45,7 @@ import kotlin.reflect.KFunction1
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SavedOrderDetails(
-    state: OrderState,
+    state: MyOrdersState,
     navController: NavController,
     onEvent: (ItemEvent) -> Unit,
 ) {
@@ -74,7 +75,7 @@ fun SavedOrderDetails(
             stickyHeader {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = state.selectedOrderName.value,
+                    text = state.orderName.value,
                     style = MaterialTheme.typography.titleMedium,
                 )
             }

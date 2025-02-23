@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
+import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersState
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.TopBar
@@ -44,9 +45,8 @@ import com.mg.barpos.presentation.components.TopBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
-    state: OrderState,
+    state: MyOrdersState,
     navController: NavController,
-    onEvent: (OrderEvent) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -74,7 +74,7 @@ fun OrdersScreen(
                                 .height(60.dp),
                             onClick = {
                                 state.selectedOrderNumber.value = state.orders[index].orderNumber
-                                state.selectedOrderName.value = state.orders[index].orderName
+                                state.orderName.value = state.orders[index].orderName
                                 state.orderTotal.value = state.orders[index].orderTotal
                                 navController.navigate("SavedOrderDetails")
                             }
