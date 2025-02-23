@@ -22,6 +22,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.mg.barpos.presentation.MenuState
 import com.mg.barpos.presentation.NavigationItem
+import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersState
+import com.mg.barpos.presentation.OrderContainer.MyOrders.OrdersScreen
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 
@@ -29,6 +31,7 @@ import com.mg.barpos.presentation.OrderState
 fun MainTabScreen(
     state: OrderState,
     menuState: MenuState,
+    myOrdersState: MyOrdersState,
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
@@ -53,6 +56,7 @@ fun MainTabScreen(
             Navigations(
                 state = state,
                 menuState = menuState,
+                myOrdersState = myOrdersState,
                 navController = navController,
                 tabController = tabController,
                 onEvent = onEvent,
@@ -65,6 +69,7 @@ fun MainTabScreen(
 fun Navigations(
     state: OrderState,
     menuState: MenuState,
+    myOrdersState: MyOrdersState,
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
@@ -72,9 +77,8 @@ fun Navigations(
     NavHost(tabController, startDestination = NavigationItem.OrdersScreen.route) {
         composable(NavigationItem.OrdersScreen.route) {
             OrdersScreen(
-                state = state,
+                state = myOrdersState,
                 navController = navController,
-                onEvent = onEvent,
             )
         }
         composable(NavigationItem.ItemMenu.route) {

@@ -17,7 +17,13 @@ class MenuService (private val menuDao: MenuItemDao) {
         menuDao.upsertStoredMenuItem(menuItem)
     }
 
+    suspend fun updateMenuItem(menuItem: StoredMenuItem) {
+        menuDao.updateStoredMenuItem(menuItem)
+    }
+
     suspend fun saveExtraItem(extraItem: StoredExtraItem) {
         menuDao.upsertStoredExtraItem(extraItem)
     }
+
+
 }

@@ -4,6 +4,7 @@ import com.mg.barpos.data.StoredMenuItem
 
 sealed interface StoredMenuItemEvent {
     data class SaveMenuItem(
+        val itemNumber: Int?,
         val itemName: String,
         val itemPrice: Double,
         val category: String,

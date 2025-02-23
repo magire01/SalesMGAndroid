@@ -11,6 +11,7 @@ import com.mg.barpos.data.MenuList.MenuItemDao
 import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.Orders.Order
 import com.mg.barpos.data.Orders.OrderService
+import com.mg.barpos.utils.FullScreenLoadingManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -69,7 +70,9 @@ class OrderViewModel(
                 val itemList = event.items
 
                 viewModelScope.launch() {
+                    FullScreenLoadingManager.showLoader()
                     orderService.createOrder(order, itemList)
+                    FullScreenLoadingManager.hideLoader()
                 }
                 _state.update {
                     it.copy(

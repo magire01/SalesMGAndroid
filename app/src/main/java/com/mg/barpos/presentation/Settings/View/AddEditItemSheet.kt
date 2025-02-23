@@ -65,6 +65,7 @@ fun AddEditItemSheet(
                         0,
                         extraOptions.toTypedArray(),
                         emptyArray<String>(),
+                        selectedItem.itemNumber
                     )
                     onSubmitClick(submittableItem)
                 }

@@ -1,5 +1,14 @@
 package com.mg.barpos
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS
+import android.Manifest.permission.BLUETOOTH_CONNECT
+import android.Manifest.permission.BLUETOOTH_PRIVILEGED
+import android.Manifest.permission.BLUETOOTH_SCAN
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,7 +17,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,29 +24,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModelProvider
-
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
+import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.OrderDatabase
 import com.mg.barpos.data.Orders.OrderService
 import com.mg.barpos.presentation.MenuViewModel
-import com.mg.barpos.presentation.OrderViewModel
-import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
-import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.OrderContainer.ConfirmOrderScreen
 import com.mg.barpos.presentation.OrderContainer.MainTabScreen
-import com.mg.barpos.presentation.OrderContainer.OrdersScreen
-import com.mg.barpos.presentation.OrderContainer.SavedOrderDetails
+import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersViewModel
+import com.mg.barpos.presentation.OrderContainer.MyOrders.SavedOrderDetails
+import com.mg.barpos.presentation.OrderViewModel
 import com.mg.barpos.presentation.Settings.SettingsContainer
+import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
+import com.mg.barpos.presentation.components.FullScreenLoader
+import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
+import java.io.PrintWriter
+import java.net.Socket
+
 
 class MainActivity : ComponentActivity() {
 
@@ -67,7 +82,15 @@ class MainActivity : ComponentActivity() {
     private val orderService by lazy { OrderService(database.orderDao) }
     private val menuService by lazy { MenuService(database.menuDao) }
 
-
+    private val myOrdersViewModel by viewModels<MyOrdersViewModel> (
+        factoryProducer = {
+            object: ViewModelProvider.Factory {
+                override fun<T: ViewModel> create(modelClass: Class<T>): T {
+                    return MyOrdersViewModel(orderService) as T
+                }
+            }
+        }
+    )
     private val viewModel by viewModels<OrderViewModel> (
         factoryProducer = {
             object: ViewModelProvider.Factory {
@@ -97,8 +120,102 @@ class MainActivity : ComponentActivity() {
             }
         }
     )
+
+    fun printToIP(ipAddress: String, port: Int, message: String) {
+        try {
+            val socket = Socket(ipAddress, port)
+            val writer = PrintWriter(socket.getOutputStream(), true)
+            writer.println(message)
+            writer.close()
+            socket.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun printNetwork() {
+        val ipAddress = "127.0.0.1" // Replace with the target IP address
+        val port = 12345 // Replace with the target port
+        val message = createReceipt()
+
+        printToIP(ipAddress, port, message)
+        println("Message sent to $ipAddress:$port")
+    }
+
+    private fun printBluetooth() {
+        val bluetoothConnection: BluetoothConnection? = BluetoothPrintersConnections.selectFirstPaired()
+        if (bluetoothConnection != null) {
+            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
+
+            // Printing commands
+            printer.printFormattedText(createReceipt())
+
+            printer.disconnectPrinter()
+
+        }
+    }
+    private fun createReceipt(): String {
+//        val items = orderService.getItemsById(order.orderNumber)
+        var header: String =  "<font size='big'>Some text</font>" +
+                "\n" +
+                "test" +
+                "\n" +
+                "\n" +
+                "\n"
+
+        return(header)
+    }
+
+
+
+    private fun doPrint() {
+        // printBluetooth()
+        printNetwork()
+    }
+
+    private val PERMISSIONS_STORAGE = arrayOf<String>(
+        READ_EXTERNAL_STORAGE,
+        WRITE_EXTERNAL_STORAGE,
+        ACCESS_FINE_LOCATION,
+        ACCESS_COARSE_LOCATION,
+        ACCESS_LOCATION_EXTRA_COMMANDS,
+        BLUETOOTH_SCAN,
+        BLUETOOTH_CONNECT,
+        BLUETOOTH_PRIVILEGED
+    )
+    private val PERMISSIONS_LOCATION = arrayOf<String>(
+        ACCESS_FINE_LOCATION,
+        ACCESS_COARSE_LOCATION,
+        ACCESS_LOCATION_EXTRA_COMMANDS,
+        BLUETOOTH_SCAN,
+        BLUETOOTH_CONNECT,
+        BLUETOOTH_PRIVILEGED
+    )
+
+    private fun checkPermissions() {
+        val permission1 =
+            ActivityCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
+        val permission2 =
+            ActivityCompat.checkSelfPermission(this, BLUETOOTH_SCAN)
+        if (permission1 != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                this,
+                PERMISSIONS_STORAGE,
+                1
+            )
+        } else if (permission2 != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                PERMISSIONS_LOCATION,
+                1
+            )
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkPermissions()
         setContent {
             RoomDatabaseTheme {
                 // A surface container using the 'background' color from the theme
@@ -108,12 +225,13 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     val state by viewModel.state.collectAsState()
+                    val myOrdersState by myOrdersViewModel.state.collectAsState()
                     val menuState by menuViewModel.state.collectAsState()
                     val editMenuState by editMenuViewModel.uiState.collectAsState()
                     val navController = rememberNavController()
                     val tabController = rememberNavController()
 
-
+                    FullScreenLoader()
                     NavHost(
                         navController= navController,
                         startDestination = "MainTabScreen",
@@ -126,18 +244,19 @@ class MainActivity : ComponentActivity() {
                             MainTabScreen(
                                 state = state,
                                 menuState = menuState,
+                                myOrdersState = myOrdersState,
                                 navController = navController,
                                 tabController = tabController,
                                 onEvent = viewModel::onEvent,
                             )
                         }
-                        composable("OrdersScreen") {
-                            OrdersScreen(
-                                state = state,
-                                navController = navController,
-                                onEvent = viewModel::onEvent,
-                            )
-                        }
+//                        composable("OrdersScreen") {
+//                            OrdersScreen(
+//                                state = state,
+//                                navController = navController,
+//                                onEvent = viewModel::onEvent,
+//                            )
+//                        }
 //                        composable("ItemMenu") {
 //                            ItemMenu(
 //                                state = state,
@@ -145,9 +264,9 @@ class MainActivity : ComponentActivity() {
 //                        }
                         composable("SavedOrderDetails") {
                             SavedOrderDetails(
-                                state = state,
+                                state = myOrdersState,
                                 navController = navController,
-                                onEvent = viewModel::onItemEvent)
+                                onEvent = myOrdersViewModel::onItemEvent)
                         }
                         composable("ConfirmOrderScreen") {
                             ConfirmOrderScreen(
@@ -163,6 +282,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 state = editMenuState,
                                 onEvent = editMenuViewModel::onEvent,
+                                print = { doPrint() }
                             )
                         }
                     }

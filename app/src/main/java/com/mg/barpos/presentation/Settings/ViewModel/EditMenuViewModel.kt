@@ -54,7 +54,12 @@ class EditMenuViewModel(
                 )
 
                 viewModelScope.launch() {
-                    menuService.saveMenuItem(menuItem)
+                    var findItem = itemList.value.find {it.itemNumber == event.itemNumber }
+                    if (findItem == null) {
+                        menuService.saveMenuItem(menuItem)
+                    } else {
+                        menuService.updateMenuItem(menuItem)
+                    }
                 }
                 _uiState.update {
                     it.copy(

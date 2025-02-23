@@ -153,6 +153,7 @@ fun EditMenu(
                             numberOfSides = it.numberOfSides,
                             sideOptions = it.sideOptions,
                             selectedSides = it.selectedSides,
+                            itemNumber = it.itemNumber
                         )
                     )
                     popupControl = false

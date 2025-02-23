@@ -32,7 +32,8 @@ import com.mg.barpos.presentation.Settings.View.EditPrinter
 fun SettingsContainer(
     navController: NavController,
     state: EditMenuState,
-    onEvent: (StoredMenuItemEvent) -> Unit
+    onEvent: (StoredMenuItemEvent) -> Unit,
+    print: () -> Unit,
 ) {
     val tabController = rememberNavController()
 
@@ -54,42 +55,27 @@ fun SettingsContainer(
                 )
             )
         ) {
-            SettingsNavigation(
-                tabController = tabController,
-                navController = navController,
-                state = state,
-                onEvent = onEvent,
-            )
-        }
-    }
-}
+            NavHost(tabController, startDestination = "CreateMenu") {
+                composable(NavigationItem.EditMenu.route) {
+                    EditMenu(
+                        navController = navController,
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
 
-@Composable
-fun SettingsNavigation(
-    navController: NavController,
-    tabController: NavHostController,
-    state: EditMenuState,
-    onEvent: (StoredMenuItemEvent) -> Unit,
-) {
-    NavHost(tabController, startDestination = "CreateMenu") {
-        composable(NavigationItem.EditMenu.route) {
-            EditMenu(
-                navController = navController,
-                state = state,
-                onEvent = onEvent,
-            )
-        }
+                composable(NavigationItem.EditExtras.route) {
+                    EditExtraItems(
+                        navController = navController,
+                        state = state,
+                        onEvent = onEvent,
+                    )
+                }
 
-        composable(NavigationItem.EditExtras.route) {
-            EditExtraItems(
-                navController = navController,
-                state = state,
-                onEvent = onEvent,
-            )
-        }
-
-        composable("EditPrinter") {
-            EditPrinter(navController = navController)
+                composable("EditPrinter") {
+                    EditPrinter(navController = navController, print = print)
+                }
+            }
         }
     }
 }
