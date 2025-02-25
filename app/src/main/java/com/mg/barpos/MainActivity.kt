@@ -35,6 +35,7 @@ import androidx.room.Room
 import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
+import com.dantsu.escposprinter.connection.tcp.TcpConnection
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.MenuList.MenuService
@@ -51,6 +52,7 @@ import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
 import com.mg.barpos.presentation.components.FullScreenLoader
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
+import java.io.OutputStream
 import java.io.PrintWriter
 import java.net.Socket
 
@@ -122,20 +124,30 @@ class MainActivity : ComponentActivity() {
     )
 
     fun printToIP(ipAddress: String, port: Int, message: String) {
-        try {
-            val socket = Socket(ipAddress, port)
-            val writer = PrintWriter(socket.getOutputStream(), true)
-            writer.println(message)
-            writer.close()
-            socket.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        Thread {
+            val printer = EscPosPrinter(TcpConnection(ipAddress, port), 203, 48f, 32)
+            printer.printFormattedTextAndCut(
+                "[C]<u><font size='big'>ORDER N°058</font></u>\n" +
+                        "[L]\n" +
+                        "[C]================================\n" +
+                        "[L]\n" +
+                        "[L]<b>BEAUTIFUL SHIRT</b>[R]9.99€\n" +
+                        "[L]  + Size : S\n" +
+                        "[L]\n" +
+                        "[L]<b>AWESOME SHOES</b>[R]24.99€\n" +
+                        "[L]  + Size : 42\n" +
+                        "[L]\n" +
+                        "[C]--------------------------------\n" +
+                        "[R]TOTAL PRICE :[R]34.98€\n" +
+                        "[L]\n" +
+                        "[C]Thank you !\n"
+            )
+        }.start()
     }
 
     private fun printNetwork() {
-        val ipAddress = "127.0.0.1" // Replace with the target IP address
-        val port = 12345 // Replace with the target port
+        val ipAddress = "192.168.1.87" // Replace with the target IP address
+        val port = 9100 // Replace with the target port
         val message = createReceipt()
 
         printToIP(ipAddress, port, message)
