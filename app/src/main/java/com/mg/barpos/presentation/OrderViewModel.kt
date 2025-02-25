@@ -21,7 +21,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class OrderViewModel(
-    private val orderService: OrderService, menuService: MenuService
+    private val orderService: OrderService,
+    menuService: MenuService,
+    private val printReceipt: (order: Order, itemList: List<Item>) -> Unit
 ) : ViewModel() {
 
 
@@ -61,7 +63,7 @@ class OrderViewModel(
         when (event) {
 
             is OrderEvent.SaveOrder -> {
-                val order = Order(
+                var order = Order(
                     orderName = event.orderName,
                     isTab = event.isTab,
                     orderTotal = event.orderTotal
@@ -72,6 +74,8 @@ class OrderViewModel(
                 viewModelScope.launch() {
                     FullScreenLoadingManager.showLoader()
                     orderService.createOrder(order, itemList)
+                    order.orderNumber = state.value.orderNumber
+                    printReceipt(order, itemList)
                     FullScreenLoadingManager.hideLoader()
                 }
                 _state.update {

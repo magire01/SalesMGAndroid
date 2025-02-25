@@ -40,6 +40,8 @@ import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.OrderDatabase
+import com.mg.barpos.data.Orders.Item
+import com.mg.barpos.data.Orders.Order
 import com.mg.barpos.data.Orders.OrderService
 import com.mg.barpos.presentation.MenuViewModel
 import com.mg.barpos.presentation.OrderContainer.ConfirmOrderScreen
@@ -97,7 +99,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return OrderViewModel(orderService, menuService) as T
+                    return OrderViewModel(orderService, menuService, ::printReceipt) as T
                 }
             }
         }
@@ -148,9 +150,9 @@ class MainActivity : ComponentActivity() {
     private fun printNetwork() {
         val ipAddress = "192.168.1.87" // Replace with the target IP address
         val port = 9100 // Replace with the target port
-        val message = createReceipt()
+//        val message = createReceipt()
 
-        printToIP(ipAddress, port, message)
+        printToIP(ipAddress, port, "TEST")
         println("Message sent to $ipAddress:$port")
     }
 
@@ -160,19 +162,43 @@ class MainActivity : ComponentActivity() {
             val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
 
             // Printing commands
-            printer.printFormattedText(createReceipt())
+            printer.printFormattedText("TEST")
 
             printer.disconnectPrinter()
 
         }
     }
-    private fun createReceipt(): String {
+
+    private fun printReceipt(order: Order, itemList: List<Item>) {
+        val bluetoothConnection: BluetoothConnection? = BluetoothPrintersConnections.selectFirstPaired()
+        if (bluetoothConnection != null) {
+            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
+
+            // Printing commands
+            printer.printFormattedText(createReceipt(order, itemList))
+
+            printer.disconnectPrinter()
+
+        }
+    }
+
+    private fun createReceipt(order: Order, itemList: List<Item>): String {
 //        val items = orderService.getItemsById(order.orderNumber)
-        var header: String =  "<font size='big'>Some text</font>" +
+        var items = ""
+        for (item in itemList) {
+            items += "<b>${item.itemName} - ${item.itemPrice}</b>\n"
+            for (side in item.selectedSides) {
+                items += "<b>+ ${side}</b>\n"
+            }
+        }
+        var header: String =  "<font size='big'>Covington Fire Department</font>" +
                 "\n" +
-                "test" +
+                "<font size='big'>Fish Fry</font>" +
                 "\n" +
+                "<font size='big'># ${order.orderNumber}</font>" +
                 "\n" +
+                "<b>${order.orderNumber}</b>\n" +
+                "${items}"
                 "\n"
 
         return(header)
@@ -181,8 +207,8 @@ class MainActivity : ComponentActivity() {
 
 
     private fun doPrint() {
-        // printBluetooth()
-        printNetwork()
+         printBluetooth()
+//        printNetwork()
     }
 
     private val PERMISSIONS_STORAGE = arrayOf<String>(

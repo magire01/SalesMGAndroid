@@ -10,5 +10,5 @@ data class Order(
     val orderTotal: Double,
 
     @PrimaryKey(autoGenerate = true)
-    val orderNumber: Int = 0
+    var orderNumber: Int = 0
     )
