@@ -2,9 +2,12 @@ package com.mg.barpos.presentation.Settings.View
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -28,6 +31,7 @@ fun AddEditExtraSheet(
     onDismiss: () -> Unit,
     selectedItem: StoredExtraItem,
     onSubmitClick: (StoredExtraItem) -> Unit,
+    onDeleteClick: (StoredExtraItem) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -47,17 +51,6 @@ fun AddEditExtraSheet(
             Modifier
                 .padding(bottom = 60.dp)
                 .fillMaxSize(),
-            bottomBar = {
-                SubmitButton(buttonTitle = "Save Item") {
-                    var submittableItem = StoredExtraItem(
-                        itemName.value,
-                        itemCategory.value,
-                        selectedItem.categoryLimit,
-                        selectedItem.numberPriority,
-                    )
-                    onSubmitClick(submittableItem)
-                }
-            }
         )
         { padding ->
             LazyColumn(
@@ -77,6 +70,42 @@ fun AddEditExtraSheet(
 
                 item {
                     ItemTextField("Item Name", itemName.value) { itemName.value = it }
+                }
+
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 100.dp,
+                                vertical = 20.dp,
+                            )
+                    ) {
+                        SubmitButton(buttonTitle = "Save Item") {
+                            var submittableItem = StoredExtraItem(
+                                itemName.value,
+                                itemCategory.value,
+                                selectedItem.categoryLimit,
+                                selectedItem.numberPriority,
+                            )
+                            onSubmitClick(submittableItem)
+                        }
+
+                        Button(onClick = {
+                            var deletableItem = StoredExtraItem(
+                                itemName.value,
+                                itemCategory.value,
+                                selectedItem.categoryLimit,
+                                selectedItem.numberPriority,
+                                selectedItem.extraNumber,
+                                )
+                            onDeleteClick(deletableItem)
+                        }) {
+                            Text(text = "Delete Item")
+                        }
+                    }
+
                 }
             }
         }

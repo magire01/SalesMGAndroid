@@ -1,5 +1,6 @@
 package com.mg.barpos.presentation.OrderContainer
 
+import android.view.Menu
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,7 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.mg.barpos.data.Orders.Item
+import com.mg.barpos.presentation.MenuEvent
 import com.mg.barpos.presentation.MenuState
+import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.MenuCard
 import com.mg.barpos.presentation.components.SelectedItemRow
@@ -37,6 +40,7 @@ fun ItemMenu(
     state: OrderState,
     menuState: MenuState,
     navController: NavController,
+    onMenuEvent: (MenuEvent) -> Unit,
 ) {
     var selectedItemList = remember { mutableStateListOf<Item>() }
     var popupControl by remember { mutableStateOf(false) }
@@ -81,7 +85,8 @@ fun ItemMenu(
 
                         MenuCard(
                             itemName = category.menuList[index].itemName,
-                            itemPrice = category.menuList[index].itemPrice.toString()
+                            itemPrice = category.menuList[index].itemPrice.toString(),
+                            inStock = category.menuList[index].inStock
                         ) {
                             selectedItem = Item(
                                 orderId = state.orders.size + 1,
@@ -91,7 +96,18 @@ fun ItemMenu(
                                 sideOptions = category.menuList[index].sideOptions,
                                 selectedSides = category.menuList[index].selectedSides,
                             )
-                            if (category.menuList[index].numberOfSides > 0) {
+                            if (category.menuList[index].sideOptions.isNotEmpty()) {
+                                onMenuEvent(
+                                    MenuEvent.SelectedMenuItem(
+                                        category.menuList[index].itemName,
+                                        category.menuList[index].itemPrice,
+                                        category.menuList[index].category,
+                                        category.menuList[index].numberPriority,
+                                        category.menuList[index].numberOfSides,
+                                        category.menuList[index].sideOptions,
+                                        category.menuList[index].selectedSides,
+                                        )
+                                )
                                 popupControl = true
                             } else {
                                 selectedItem?.let {

@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.mg.barpos.data.MenuList.ExtraCategory
 import com.mg.barpos.data.Orders.Item
 import com.mg.barpos.presentation.MenuState
 import com.mg.barpos.presentation.components.SelectedSideCard
@@ -82,66 +83,67 @@ fun AddSidesSheet(
             ) {
                 stickyHeader {
                     Text(
-                        text = "Add Sides (${item.numberOfSides})",
+                        text = "Extras",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                     )
                 }
 
-                items(item.sideOptions.size) { index ->
-                    Card(
-                        modifier = Modifier
-                            .width(200.dp),
-                        onClick = {
-                            if (selectedSides.size <= item.numberOfSides - 1) {
-                                selectedSides.add(item.sideOptions[index])
-                            } else {
-                                scope.launch {
-                                    snackbarHostState.showSnackbar("Only ${item.numberOfSides} sides allowed")
-                                }
-                            }
+                items(menuState.extraList.size) { index ->
+                    var selectedItems = remember { mutableStateListOf<String>() }
+                    Text("${menuState.extraList[index].categoryName} (Select ${menuState.extraList[index].categoryLimit})")
+                    Row {
+                        for (list in menuState.extraList[index].extraList) {
+                            Card(
+                                modifier = Modifier
+                                    .width(200.dp),
+                                onClick = {
+                                    if (selectedItems.size <= list.categoryLimit - 1) {
+                                        selectedItems.add(list.itemName)
+                                        selectedSides.add(list.itemName)
+                                    } else {
+                                        scope.launch {
+                                            snackbarHostState.showSnackbar("Only ${list.categoryLimit} ${list.category} allowed")
+                                        }
+                                    }
 
-                        }
-                    ) {
-                        Row {
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
+                                }
                             ) {
-                                Text(item.sideOptions[index], textAlign = TextAlign.Center)
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .weight(1f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Add,
-                                    contentDescription = "Add Item"
-                                )
+                                Row {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(list.itemName, textAlign = TextAlign.Center)
+                                    }
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Add,
+                                            contentDescription = "Add Item"
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
-                }
-                item {
+
                     Column(
                         modifier = Modifier
-                            .height(50.dp)
                             .fillMaxWidth()
                     ) {
-                        Row() {
-                            for (side in selectedSides) {
-                                Column(
-                                    modifier = Modifier
-                                        .width(LocalConfiguration.current.screenWidthDp.dp / item.numberOfSides),
+                        for (side in selectedItems) {
+                            Column {
+                                SelectedSideCard(
+                                    sideName = side
                                 ) {
-                                    SelectedSideCard(
-                                        sideName = side
-                                    ) {
-                                        selectedSides.remove(side)
-                                    }
+                                    selectedSides.remove(side)
+                                    selectedItems.remove(side)
                                 }
                             }
                         }

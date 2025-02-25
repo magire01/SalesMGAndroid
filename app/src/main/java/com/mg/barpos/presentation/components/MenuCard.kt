@@ -12,12 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun MenuCard(
     itemName: String,
     itemPrice: String,
+    inStock: Boolean,
     onClick: () -> Unit,
 ) {
     ElevatedCard(
@@ -25,15 +27,18 @@ fun MenuCard(
             defaultElevation = 6.dp
         ),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
+            containerColor = if (inStock) MaterialTheme.colorScheme.primaryContainer else Color.Gray
+
+    ),
         modifier = Modifier
             .padding(8.dp)
             .height(60.dp)
             .fillMaxWidth(),
 
         onClick = {
-            onClick()
+            if (inStock) {
+                onClick()
+            }
         }
     ) {
         Row (
@@ -42,21 +47,32 @@ fun MenuCard(
                 .padding(8.dp)
                 .height(100.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(text = itemName)
+            if (inStock) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = itemName)
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(text = "$" + itemPrice)
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = "$itemName - Out of Stock")
+                }
             }
 
-            Column(
-                modifier = Modifier
-                    .weight(1f),
-                horizontalAlignment = Alignment.End
-            ) {
-                Text(text = "$" + itemPrice)
-            }
         }
     }
 }

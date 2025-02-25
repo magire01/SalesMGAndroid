@@ -248,20 +248,10 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 tabController = tabController,
                                 onEvent = viewModel::onEvent,
+                                onMenuEvent = menuViewModel::onEvent
                             )
                         }
-//                        composable("OrdersScreen") {
-//                            OrdersScreen(
-//                                state = state,
-//                                navController = navController,
-//                                onEvent = viewModel::onEvent,
-//                            )
-//                        }
-//                        composable("ItemMenu") {
-//                            ItemMenu(
-//                                state = state,
-//                                navController = navController)
-//                        }
+
                         composable("SavedOrderDetails") {
                             SavedOrderDetails(
                                 state = myOrdersState,

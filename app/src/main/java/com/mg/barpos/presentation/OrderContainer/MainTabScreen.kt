@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.mg.barpos.presentation.MenuEvent
 import com.mg.barpos.presentation.MenuState
 import com.mg.barpos.presentation.NavigationItem
 import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersState
@@ -35,6 +36,7 @@ fun MainTabScreen(
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
+    onMenuEvent: (MenuEvent) -> Unit,
 ) {
     Scaffold(
         bottomBar = {
@@ -60,6 +62,7 @@ fun MainTabScreen(
                 navController = navController,
                 tabController = tabController,
                 onEvent = onEvent,
+                onMenuEvent = onMenuEvent,
             )
         }
     }
@@ -73,6 +76,7 @@ fun Navigations(
     navController: NavController,
     tabController: NavHostController,
     onEvent: (OrderEvent) -> Unit,
+    onMenuEvent: (MenuEvent) -> Unit,
 ) {
     NavHost(tabController, startDestination = NavigationItem.OrdersScreen.route) {
         composable(NavigationItem.OrdersScreen.route) {
@@ -86,6 +90,7 @@ fun Navigations(
                 state = state,
                 menuState = menuState,
                 navController = navController,
+                onMenuEvent = onMenuEvent,
             )
         }
     }

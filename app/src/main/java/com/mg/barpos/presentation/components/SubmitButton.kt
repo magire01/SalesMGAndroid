@@ -16,7 +16,6 @@ fun SubmitButton(
 ) {
     OutlinedButton (
         modifier = Modifier
-            .fillMaxWidth()
             .padding(
                 horizontal = 100.dp,
                 vertical = 20.dp,

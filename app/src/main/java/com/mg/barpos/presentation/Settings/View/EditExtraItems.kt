@@ -174,17 +174,29 @@ fun EditExtraItems(
             if (popupControl) {
                 AddEditExtraSheet(
                     onDismiss = { popupControl = false },
-                    selectedItem = selectedItem.value
-                ) {
-                    onEvent(
-                        StoredMenuItemEvent.SaveExtraItem(
-                            itemName = it.itemName,
-                            category = it.category,
-                            categoryLimit = newCategoryLimit.value
+                    selectedItem = selectedItem.value,
+                    onSubmitClick = {
+                        onEvent(
+                            StoredMenuItemEvent.SaveExtraItem(
+                                itemName = it.itemName,
+                                category = it.category,
+                                categoryLimit = newCategoryLimit.value
+                            )
                         )
-                    )
-                    popupControl = false
-                }
+                        popupControl = false
+                    },
+                    onDeleteClick = {
+                        onEvent(
+                            StoredMenuItemEvent.DeleteExtraItem(
+                                extraNumber = it.extraNumber,
+                                itemName = it.itemName,
+                                category = it.category,
+                                categoryLimit = newCategoryLimit.value
+                            )
+                        )
+                        popupControl = false
+                    }
+                )
             }
         }
     }

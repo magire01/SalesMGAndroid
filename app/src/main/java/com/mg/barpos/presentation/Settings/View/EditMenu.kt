@@ -35,13 +35,24 @@ import com.mg.barpos.presentation.components.TopBar
 fun EditMenu(
     navController: NavController,
     state: EditMenuState,
-    onEvent: (StoredMenuItemEvent) -> Unit
+    onEvent: (StoredMenuItemEvent) -> Unit,
 ) {
     var popupControl by remember { mutableStateOf(false) }
     var newCategory = remember { mutableStateOf(false)}
     var newCategoryName = remember { mutableStateOf("")}
     var newItem = remember { mutableStateOf(false)}
-    var selectedItem = remember { mutableStateOf(StoredMenuItem("", 0.00, newCategoryName.value, 0, 0, emptyArray(), emptyArray()))}
+    var selectedItem = remember {
+        mutableStateOf(
+            StoredMenuItem(itemName = "",
+                itemPrice = 0.00,
+                category = newCategoryName.value,
+                numberPriority = 0,
+                numberOfSides = 0,
+                sideOptions = emptyArray(),
+                selectedSides = emptyArray(),
+                itemNumber = 0))
+    }
+
     Scaffold (
         topBar = {
             TopBar(title = "Edit Menu", navController = navController) {
@@ -63,7 +74,14 @@ fun EditMenu(
                         Row {
                             Text(text = category.categoryName)
                             Button(onClick = {
-                                selectedItem.value = StoredMenuItem("", 0.00, category.categoryName, 0, 0, emptyArray(), emptyArray())
+                                selectedItem.value = StoredMenuItem(itemName = "",
+                                    itemPrice = 0.00,
+                                    category = newCategoryName.value,
+                                    numberPriority = 0,
+                                    numberOfSides = 0,
+                                    sideOptions = emptyArray(),
+                                    selectedSides = emptyArray(),
+                                    itemNumber = 0)
                                 newCategoryName.value = ""
                                 newItem.value = false
                                 popupControl = true
@@ -143,21 +161,38 @@ fun EditMenu(
                 AddEditItemSheet(
                     onDismiss = { popupControl = false },
                     state = state,
-                    selectedItem = selectedItem.value
-                ) {
-                    onEvent(
-                        StoredMenuItemEvent.SaveMenuItem(
-                            itemName = it.itemName,
-                            itemPrice = it.itemPrice,
-                            category = it.category,
-                            numberOfSides = it.numberOfSides,
-                            sideOptions = it.sideOptions,
-                            selectedSides = it.selectedSides,
-                            itemNumber = it.itemNumber
+                    selectedItem = selectedItem.value,
+                    onSubmitClick = {
+                        onEvent(
+                            StoredMenuItemEvent.SaveMenuItem(
+                                itemName = it.itemName,
+                                itemPrice = it.itemPrice,
+                                category = it.category,
+                                numberOfSides = it.numberOfSides,
+                                sideOptions = it.sideOptions,
+                                selectedSides = it.selectedSides,
+                                itemNumber = it.itemNumber,
+                                inStock = it.inStock
+                            )
                         )
-                    )
-                    popupControl = false
-                }
+                        popupControl = false
+                    },
+                    onDeleteClick = {
+                        onEvent(
+                            StoredMenuItemEvent.DeleteMenuItem(
+                                itemName = it.itemName,
+                                itemPrice = it.itemPrice,
+                                category = it.category,
+                                numberOfSides = it.numberOfSides,
+                                sideOptions = it.sideOptions,
+                                selectedSides = it.selectedSides,
+                                itemNumber = it.itemNumber,
+                                inStock = it.inStock
+                            )
+                        )
+                        popupControl = false
+                    }
+                )
             }
         }
     }

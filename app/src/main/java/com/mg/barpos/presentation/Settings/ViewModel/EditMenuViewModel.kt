@@ -44,6 +44,7 @@ class EditMenuViewModel(
 
             is StoredMenuItemEvent.SaveMenuItem -> {
                 val menuItem = StoredMenuItem(
+                    itemNumber = event.itemNumber ?: 0,
                     itemName = event.itemName,
                     itemPrice = event.itemPrice,
                     category = event.category,
@@ -51,15 +52,34 @@ class EditMenuViewModel(
                     numberOfSides = event.numberOfSides,
                     sideOptions = event.sideOptions,
                     selectedSides = event.selectedSides,
+                    inStock = event.inStock
                 )
 
                 viewModelScope.launch() {
-                    var findItem = itemList.value.find {it.itemNumber == event.itemNumber }
-                    if (findItem == null) {
-                        menuService.saveMenuItem(menuItem)
-                    } else {
-                        menuService.updateMenuItem(menuItem)
-                    }
+                    menuService.saveMenuItem(menuItem)
+                }
+                _uiState.update {
+                    it.copy(
+                        menuList = createMenuList()
+                    )
+                }
+            }
+
+            is StoredMenuItemEvent.DeleteMenuItem -> {
+                val menuItem = StoredMenuItem(
+                    itemNumber = event.itemNumber,
+                    itemName = event.itemName,
+                    itemPrice = event.itemPrice,
+                    category = event.category,
+                    numberPriority = itemList.value.filter { it.category == event.category }.size,
+                    numberOfSides = event.numberOfSides,
+                    sideOptions = event.sideOptions,
+                    selectedSides = event.selectedSides,
+                    inStock = event.inStock
+                )
+
+                viewModelScope.launch() {
+                    menuService.deleteMenuItem(menuItem)
                 }
                 _uiState.update {
                     it.copy(
@@ -78,6 +98,25 @@ class EditMenuViewModel(
 
                 viewModelScope.launch() {
                     menuService.saveExtraItem(extraItem)
+                }
+                _uiState.update {
+                    it.copy(
+                        extraList = createExtraList()
+                    )
+                }
+            }
+
+            is StoredMenuItemEvent.DeleteExtraItem -> {
+                val extraItem = StoredExtraItem(
+                    extraNumber = event.extraNumber,
+                    itemName = event.itemName,
+                    category = event.category,
+                    numberPriority = extraList.value.filter { it.category == event.category }.size,
+                    categoryLimit = event.categoryLimit,
+                )
+
+                viewModelScope.launch() {
+                    menuService.deleteExtraItem(extraItem)
                 }
                 _uiState.update {
                     it.copy(

@@ -3,11 +3,14 @@ package com.mg.barpos.presentation.Settings.View
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -23,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.mg.barpos.data.StoredExtraItem
 import com.mg.barpos.data.StoredMenuItem
 import com.mg.barpos.presentation.Settings.State.EditMenuState
 import com.mg.barpos.presentation.components.SubmitButton
@@ -34,6 +38,7 @@ fun AddEditItemSheet(
     state: EditMenuState,
     selectedItem: StoredMenuItem,
     onSubmitClick: (StoredMenuItem) -> Unit,
+    onDeleteClick: (StoredMenuItem) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -42,6 +47,8 @@ fun AddEditItemSheet(
     var itemName = remember { mutableStateOf(selectedItem.itemName) }
     var itemPrice = remember { mutableStateOf(selectedItem.itemPrice) }
     var extraOptions = remember { mutableStateListOf<String>() }
+    val extraOptionsArray = remember { selectedItem.sideOptions.toMutableList() }
+    val itemInStock = remember { mutableStateOf(selectedItem.inStock)}
 
     ModalBottomSheet(
         modifier = Modifier
@@ -55,21 +62,6 @@ fun AddEditItemSheet(
             Modifier
                 .padding(bottom = 60.dp)
                 .fillMaxSize(),
-            bottomBar = {
-                SubmitButton(buttonTitle = "Save Item") {
-                    var submittableItem = StoredMenuItem(
-                        itemName.value,
-                        itemPrice.value,
-                        selectedItem.category,
-                        selectedItem.numberPriority,
-                        0,
-                        extraOptions.toTypedArray(),
-                        emptyArray<String>(),
-                        selectedItem.itemNumber
-                    )
-                    onSubmitClick(submittableItem)
-                }
-            }
         )
         { padding ->
             LazyColumn(
@@ -88,7 +80,18 @@ fun AddEditItemSheet(
                 }
 
                 item {
-                    ItemTextField("Item Name", itemName.value) { itemName.value = it }
+                    Row {
+                        ItemTextField("Item Name", itemName.value) { itemName.value = it }
+
+                        Text("In Stock")
+                        Checkbox(
+                            checked = itemInStock.value,
+                            onCheckedChange = {
+                                itemInStock.value = it
+                            }
+                        )
+
+                    }
                 }
 
                 item {
@@ -98,16 +101,61 @@ fun AddEditItemSheet(
                 items(state.extraCategoryList.size) {index ->
                     var (name, limit) = state.extraCategoryList[index]
                     Button(
-                        colors = ButtonDefaults.buttonColors(containerColor = if (extraOptions.contains(name)) Color.Yellow else Color.Blue),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (extraOptionsArray.contains(name)) Color.Yellow else Color.Blue),
                         onClick = {
-                            if (extraOptions.contains(name)) {
-                                extraOptions -= name
+                            if (extraOptionsArray.contains(name)) {
+                                extraOptionsArray -= name
                             } else {
-                                extraOptions += name
+                                extraOptionsArray += name
+
                             }
                     }) {
                         Text("${name} - Limit ${limit}")
                     }
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 100.dp,
+                                vertical = 20.dp,
+                            )
+                    ) {
+                        SubmitButton(buttonTitle = "Save Item") {
+                            var submittableItem = StoredMenuItem(
+                                itemName = itemName.value,
+                                itemPrice = itemPrice.value,
+                                category = selectedItem.category,
+                                numberPriority = selectedItem.numberPriority,
+                                numberOfSides = 0,
+                                sideOptions = extraOptionsArray.toTypedArray(),
+                                selectedSides = emptyArray<String>(),
+                                itemNumber = selectedItem.itemNumber,
+                                inStock = itemInStock.value
+                            )
+                            onSubmitClick(submittableItem)
+                        }
+
+                        Button(onClick = {
+                            var options = extraOptionsArray
+                            var submittableItem = StoredMenuItem(
+                                itemName = itemName.value,
+                                itemPrice = itemPrice.value,
+                                category = selectedItem.category,
+                                numberPriority = selectedItem.numberPriority,
+                                numberOfSides = 0,
+                                sideOptions = extraOptionsArray.toTypedArray(),
+                                selectedSides = emptyArray<String>(),
+                                itemNumber = selectedItem.itemNumber,
+                                inStock = selectedItem.inStock
+                            )
+                            onDeleteClick(submittableItem)
+                        }) {
+                            Text(text = "Delete Item")
+                        }
+                    }
+
                 }
             }
         }

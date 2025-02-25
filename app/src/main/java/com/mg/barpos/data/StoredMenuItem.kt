@@ -12,6 +12,7 @@ data class StoredMenuItem(
     val numberOfSides: Int,
     val sideOptions: Array<String>,
     val selectedSides: Array<String>,
+    val inStock: Boolean = true,
 
     @PrimaryKey(autoGenerate = true)
     val itemNumber: Int = 0,

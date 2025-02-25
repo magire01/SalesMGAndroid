@@ -1,6 +1,7 @@
 package com.mg.barpos.data.MenuList
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
@@ -16,6 +17,9 @@ interface MenuItemDao {
     @Update
     suspend fun updateStoredMenuItem(item: StoredMenuItem)
 
+    @Delete
+    suspend fun deleteMenuItem(item: StoredMenuItem)
+
     @Query("SELECT * FROM `StoredMenuItem`")
     fun getStoredMenuItems(): Flow<List<StoredMenuItem>>
 
@@ -24,4 +28,7 @@ interface MenuItemDao {
 
     @Query("SELECT * FROM `StoredExtraItem`")
     fun getStoredExtraItems(): Flow<List<StoredExtraItem>>
+
+    @Delete
+    suspend fun deleteExtraItem(item: StoredExtraItem)
 }
