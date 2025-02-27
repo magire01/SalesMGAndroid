@@ -75,6 +75,10 @@ fun SettingsContainer(
                 composable("EditPrinter") {
                     EditPrinter(navController = navController, print = print)
                 }
+
+                composable("Totals") {
+                    EditPrinter(navController = navController, print = print)
+                }
             }
         }
     }
@@ -85,7 +89,8 @@ fun SettingsNavigationBar(navController: NavHostController) {
     val items = listOf(
         NavigationItem.EditMenu,
         NavigationItem.EditExtras,
-        NavigationItem.EditPrinter
+        NavigationItem.EditPrinter,
+        NavigationItem.Totals
     )
     var selectedItem by remember { mutableStateOf(0) }
     var currentRoute by remember { mutableStateOf(NavigationItem.EditMenu.route) }

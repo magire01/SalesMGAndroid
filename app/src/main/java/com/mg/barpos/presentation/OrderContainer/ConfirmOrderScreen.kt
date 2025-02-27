@@ -2,7 +2,12 @@ package com.mg.barpos.presentation.OrderContainer
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -41,7 +47,8 @@ fun ConfirmOrderScreen(
 ) {
     var orderTotal: Double = 0.00
     Scaffold(
-        topBar = {
+        modifier = Modifier.imePadding().fillMaxHeight(),
+    topBar = {
             TopBar(
                 title = "Orders",
                 navController = navController
@@ -65,7 +72,6 @@ fun ConfirmOrderScreen(
                         items = state.selectedItems
                     )
                 )
-
                 navController.popBackStack()
             }
         }

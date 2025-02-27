@@ -16,10 +16,7 @@ fun SubmitButton(
 ) {
     OutlinedButton (
         modifier = Modifier
-            .padding(
-                horizontal = 100.dp,
-                vertical = 20.dp,
-            ),
+            .padding(),
         onClick = {
             onClick()
         }

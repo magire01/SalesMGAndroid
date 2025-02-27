@@ -76,13 +76,12 @@ fun EditMenu(
                             Button(onClick = {
                                 selectedItem.value = StoredMenuItem(itemName = "",
                                     itemPrice = 0.00,
-                                    category = newCategoryName.value,
+                                    category = category.categoryName,
                                     numberPriority = 0,
                                     numberOfSides = 0,
                                     sideOptions = emptyArray(),
                                     selectedSides = emptyArray(),
                                     itemNumber = 0)
-                                newCategoryName.value = ""
                                 newItem.value = false
                                 popupControl = true
                             }) {

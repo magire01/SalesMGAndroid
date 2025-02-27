@@ -51,6 +51,7 @@ import com.mg.barpos.presentation.OrderContainer.MyOrders.SavedOrderDetails
 import com.mg.barpos.presentation.OrderViewModel
 import com.mg.barpos.presentation.Settings.SettingsContainer
 import com.mg.barpos.presentation.Settings.ViewModel.EditMenuViewModel
+import com.mg.barpos.presentation.Settings.ViewModel.TotalsScreenViewModel
 import com.mg.barpos.presentation.components.FullScreenLoader
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
@@ -125,6 +126,16 @@ class MainActivity : ComponentActivity() {
         }
     )
 
+    private val totalsScreenViewModel by viewModels<TotalsScreenViewModel> (
+        factoryProducer = {
+            object: ViewModelProvider.Factory {
+                override fun<T: ViewModel> create(modelClass: Class<T>): T {
+                    return TotalsScreenViewModel(orderService, ::printReceipt) as T
+                }
+            }
+        }
+    )
+
     fun printToIP(ipAddress: String, port: Int, message: String) {
         Thread {
             val printer = EscPosPrinter(TcpConnection(ipAddress, port), 203, 48f, 32)
@@ -156,7 +167,7 @@ class MainActivity : ComponentActivity() {
         println("Message sent to $ipAddress:$port")
     }
 
-    private fun printBluetooth() {
+    private fun printBluetoothTest() {
         val bluetoothConnection: BluetoothConnection? = BluetoothPrintersConnections.selectFirstPaired()
         if (bluetoothConnection != null) {
             val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
@@ -183,23 +194,60 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun createReceipt(order: Order, itemList: List<Item>): String {
-//        val items = orderService.getItemsById(order.orderNumber)
         var items = ""
         for (item in itemList) {
-            items += "<b>${item.itemName} - ${item.itemPrice}</b>\n"
+            items += "${item.itemName} - " + "[R]$${item.itemPrice}0\n"
             for (side in item.selectedSides) {
-                items += "<b>+ ${side}</b>\n"
+                items += "+${side}  "
             }
+            items += "\n"
         }
-        var header: String =  "<font size='big'>Covington Fire Department</font>" +
+        var header: String =  "[C]<font size='small'>Covington Fire Department</font>" +
                 "\n" +
-                "<font size='big'>Fish Fry</font>" +
+                "[C]<font size='normal'>Fish Fry</font>" +
                 "\n" +
-                "<font size='big'># ${order.orderNumber}</font>" +
+                "[C]<font size='big'>Order #${order.orderNumber}</font>\n" +
+                "[C]<font size='normal'>Name: ${order.orderName}</font>\n" +
                 "\n" +
-                "<b>${order.orderNumber}</b>\n" +
-                "${items}"
-                "\n"
+                "${items}" +
+                "\n" +
+                "------------ \n" +
+                "[L]<b>Total: - " + "[R]$${order.orderTotal}0</b>" +
+                "\n \n" +
+                "[C]Thank you, see you next Friday!" +
+                "\n \n" +
+                "-------------" +
+                "\n\n\n\n"
+
+        return(header)
+    }
+
+    private fun createKitchenReceipt(order: Order, itemList: List<Item>): String {
+        var items = ""
+        var alphabet = listOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z")
+        for (index in itemList.indices) {
+            items += "${alphabet[index]}) ${itemList[index].itemName} - " + "[R]$${itemList[index].itemPrice}0\n"
+            for (side in itemList[index].selectedSides) {
+                items += "+${side}  "
+            }
+            items += "\n"
+        }
+        var header: String =  "[C]<font size='small'>Covington Fire Department</font>" +
+                "\n" +
+                "[C]<font size='normal'>Fish Fry</font>" +
+                "\n" +
+                "[C]<font size='big'>Order #${order.orderNumber}</font>\n" +
+                "[C]<font size='normal'>Name: ${order.orderName}</font>\n" +
+                "\n" +
+                "${items}" +
+                "\n" +
+                "------------ \n" +
+                "[L]<b>Total: - " + "[R]$${order.orderTotal}0</b>" +
+                "\n \n" +
+                "[C]Thank you, see you next Friday!" +
+                "\n \n" +
+                "-------------" +
+                "\n\n\n\n"
 
         return(header)
     }
@@ -207,7 +255,7 @@ class MainActivity : ComponentActivity() {
 
 
     private fun doPrint() {
-         printBluetooth()
+        printBluetoothTest()
 //        printNetwork()
     }
 
