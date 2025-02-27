@@ -24,14 +24,18 @@ import androidx.navigation.compose.rememberNavController
 import com.mg.barpos.presentation.NavigationItem
 import com.mg.barpos.presentation.Settings.State.EditMenuState
 import com.mg.barpos.presentation.Settings.State.StoredMenuItemEvent
+import com.mg.barpos.presentation.Settings.State.TotalsState
 import com.mg.barpos.presentation.Settings.View.EditExtraItems
 import com.mg.barpos.presentation.Settings.View.EditMenu
 import com.mg.barpos.presentation.Settings.View.EditPrinter
+import com.mg.barpos.presentation.Settings.View.TotalsScreen
+import com.mg.barpos.presentation.Settings.ViewModel.TotalsScreenViewModel
 
 @Composable
 fun SettingsContainer(
     navController: NavController,
     state: EditMenuState,
+    totalsState: TotalsState,
     onEvent: (StoredMenuItemEvent) -> Unit,
     print: () -> Unit,
 ) {
@@ -77,7 +81,7 @@ fun SettingsContainer(
                 }
 
                 composable("Totals") {
-                    EditPrinter(navController = navController, print = print)
+                    TotalsScreen(navController = navController, state = totalsState)
                 }
             }
         }

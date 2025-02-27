@@ -314,6 +314,7 @@ class MainActivity : ComponentActivity() {
                     val myOrdersState by myOrdersViewModel.state.collectAsState()
                     val menuState by menuViewModel.state.collectAsState()
                     val editMenuState by editMenuViewModel.uiState.collectAsState()
+                    val totalsState by totalsScreenViewModel.state.collectAsState()
                     val navController = rememberNavController()
                     val tabController = rememberNavController()
 
@@ -357,6 +358,7 @@ class MainActivity : ComponentActivity() {
                             SettingsContainer(
                                 navController = navController,
                                 state = editMenuState,
+                                totalsState = totalsState,
                                 onEvent = editMenuViewModel::onEvent,
                                 print = { doPrint() }
                             )
