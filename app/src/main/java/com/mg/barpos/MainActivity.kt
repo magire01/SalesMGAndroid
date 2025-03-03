@@ -36,6 +36,9 @@ import com.dantsu.escposprinter.EscPosPrinter
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
 import com.dantsu.escposprinter.connection.tcp.TcpConnection
+import com.dantsu.escposprinter.exceptions.EscPosConnectionException
+import com.dantsu.escposprinter.exceptions.EscPosEncodingException
+import com.dantsu.escposprinter.exceptions.EscPosParserException
 import com.mg.barpos.data.Converter
 import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.MenuList.MenuService
@@ -55,6 +58,9 @@ import com.mg.barpos.presentation.Settings.ViewModel.TotalsScreenViewModel
 import com.mg.barpos.presentation.components.FullScreenLoader
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.ui.theme.RoomDatabaseTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.OutputStream
 import java.io.PrintWriter
 import java.net.Socket
@@ -181,16 +187,46 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun printReceipt(order: Order, itemList: List<Item>) {
-        val bluetoothConnection: BluetoothConnection? = BluetoothPrintersConnections.selectFirstPaired()
-        if (bluetoothConnection != null) {
-            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
+        Thread {
+            var retry = 0
+            var success = false
+            while (retry < 5 && !success) {
+                try {
+                    val printer = EscPosPrinter(TcpConnection("192.168.1.150", 9100), 203, 80f, 32)
+                    printer.printFormattedTextAndCut(createKitchenReceipt(order, itemList))
+                    success = true
+                } catch (e: EscPosConnectionException) {
+                    println("Connection error: ${e.message}.")
+                    Thread.sleep(1000) // Wait before retrying
+                    retry++
+                } catch (e: EscPosParserException) {
+                    println("Parser error: ${e.message}")
+                    break
+                } catch (e: EscPosEncodingException) {
+                    println("Encoding error: ${e.message}")
+                    break
+                } catch (e: Exception) {
+                    println("An unexpected error occurred: ${e.message}")
+                    break
+                } finally {
+                    if (success) {
+                        val bluetoothConnection: BluetoothConnection? =
+                            BluetoothPrintersConnections.selectFirstPaired()
+                        if (bluetoothConnection != null) {
+                            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
 
-            // Printing commands
-            printer.printFormattedText(createReceipt(order, itemList))
+                            // Printing commands
+                            printer.printFormattedText(createReceipt(order, itemList))
 
-            printer.disconnectPrinter()
+                            printer.disconnectPrinter()
 
-        }
+                        }
+                    }
+                }
+            }
+
+
+        }.start()
     }
 
     private fun createReceipt(order: Order, itemList: List<Item>): String {
@@ -202,7 +238,7 @@ class MainActivity : ComponentActivity() {
             }
             items += "\n"
         }
-        var header: String =  "[C]<font size='small'>Covington Fire Department</font>" +
+        var header: String =  "[C]<font size='small'>Covington Firefighters Assoc</font>" +
                 "\n" +
                 "[C]<font size='normal'>Fish Fry</font>" +
                 "\n" +
@@ -214,7 +250,11 @@ class MainActivity : ComponentActivity() {
                 "------------ \n" +
                 "[L]<b>Total: - " + "[R]$${order.orderTotal}0</b>" +
                 "\n \n" +
-                "[C]Thank you, see you next Friday!" +
+                "[C]Thank you!\n" +
+                "[C]Covington Firefighters Assoc\n" +
+                "[C]2232 Howell St\n" +
+                "[C]Covington, KY\n" +
+                "[C](859) 431-8777\n" +
                 "\n \n" +
                 "-------------" +
                 "\n\n\n\n"
@@ -226,25 +266,25 @@ class MainActivity : ComponentActivity() {
         var items = ""
         var alphabet = listOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z")
         for (index in itemList.indices) {
-            items += "${alphabet[index]}) ${itemList[index].itemName} - " + "[R]$${itemList[index].itemPrice}0\n"
+            items += "<font size='big'>${alphabet[index]}) ${itemList[index].itemName}</font> \n"
             for (side in itemList[index].selectedSides) {
-                items += "+${side}  "
+                items += "<font size='big'>+${side}</font> \n "
             }
             items += "\n"
         }
-        var header: String =  "[C]<font size='small'>Covington Fire Department</font>" +
+        var header: String =  "[C]<font size='small'>Covington Firefighters Association</font>" +
                 "\n" +
-                "[C]<font size='normal'>Fish Fry</font>" +
+                "[C]<font size='small'>Fish Fry</font>" +
                 "\n" +
                 "[C]<font size='big'>Order #${order.orderNumber}</font>\n" +
-                "[C]<font size='normal'>Name: ${order.orderName}</font>\n" +
+                "[C]<font size='big'>Name: ${order.orderName}</font>\n" +
                 "\n" +
                 "${items}" +
                 "\n" +
                 "------------ \n" +
-                "[L]<b>Total: - " + "[R]$${order.orderTotal}0</b>" +
+                "[L]<font size='big'>Total: - " + "[R]$${order.orderTotal}0</font>" +
                 "\n \n" +
-                "[C]Thank you, see you next Friday!" +
+                "[C]Merchant Copy" +
                 "\n \n" +
                 "-------------" +
                 "\n\n\n\n"
