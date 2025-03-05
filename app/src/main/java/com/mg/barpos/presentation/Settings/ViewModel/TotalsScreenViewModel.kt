@@ -15,6 +15,7 @@ import com.mg.barpos.data.StoredExtraItem
 import com.mg.barpos.data.StoredMenuItem
 import com.mg.barpos.presentation.Settings.State.EditMenuState
 import com.mg.barpos.presentation.Settings.State.StoredMenuItemEvent
+import com.mg.barpos.presentation.Settings.State.TotalsEvent
 import com.mg.barpos.presentation.Settings.State.TotalsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -49,35 +50,29 @@ class TotalsScreenViewModel(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TotalsState())
 
-//    fun onEvent(event: OrderEvent) {
-//        when (event) {
-//
-//            is OrderEvent.SaveOrder -> {
-//                var order = Order(
-//                    orderName = event.orderName,
-//                    isTab = event.isTab,
-//                    orderTotal = event.orderTotal
-//                )
-//
-//                val itemList = event.items
-//
-//                viewModelScope.launch() {
-//                    FullScreenLoadingManager.showLoader()
-//                    orderService.createOrder(order, itemList)
-//                    order.orderNumber = state.value.orderNumber
-//                    printReceipt(order, itemList)
-//                    FullScreenLoadingManager.hideLoader()
-//                }
-//                _state.update {
-//                    it.copy(
-//                        orderNumber = state.value.orders.size,
-//                        orderName = mutableStateOf(""),
-//                    )
-//                }
-//            }
-//            else -> {}
-//        }
-//    }
+    fun onTotalsEvent(event: TotalsEvent) {
+        when (event) {
+
+            is TotalsEvent.PrintTotals -> {
+                viewModelScope.launch() {
+                    printTotals(createItemTotalsList())
+                }
+            }
+
+            is TotalsEvent.DeleteOrders -> {
+                viewModelScope.launch() {
+                    orderService.deleteAllOrders()
+                }
+
+                _state.update {
+                    it.copy(
+                        itemTotals = createItemTotalsList()
+                    )
+                }
+            }
+            else -> {}
+        }
+    }
 
     private fun createItemTotalsList(): MutableList<ItemTotal> {
         var totalsList: MutableList<ItemTotal> = mutableListOf()
@@ -86,7 +81,7 @@ class TotalsScreenViewModel(
         var totalMoney = 0.0
 
         for (order in orderList.value) {
-            totalMoney + order.orderTotal
+            totalMoney += order.orderTotal
         }
         var moneyTotals = ItemTotal(numberOfOrders, "Orders", null, totalMoney)
         totalsList.add(moneyTotals)
@@ -118,21 +113,6 @@ class TotalsScreenViewModel(
         for (item in itemList.value) {
 
         }
-
-        return totalsList
-    }
-
-    private fun createOrderTotalsList(): MutableList<ItemTotal> {
-        var totalsList: MutableList<ItemTotal> = mutableListOf()
-        var numberOfOrders = orderList.value.size
-        var totalMoney = 0.0
-
-        for (order in orderList.value) {
-            totalMoney + order.orderTotal
-        }
-
-        var orderTotals = ItemTotal(numberOfOrders, "Orders Total", null, null)
-        var moneyTotals = ItemTotal(numberOfOrders, "Money Total", null, totalMoney)
 
         return totalsList
     }

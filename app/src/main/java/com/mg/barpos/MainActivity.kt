@@ -441,6 +441,7 @@ class MainActivity : ComponentActivity() {
                                 state = editMenuState,
                                 totalsState = totalsState,
                                 onEvent = editMenuViewModel::onEvent,
+                                onTotalsEvent = totalsScreenViewModel::onTotalsEvent,
                                 print = { doPrint() }
                             )
                         }

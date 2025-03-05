@@ -24,4 +24,9 @@ class OrderService(private val dao: OrderDao) {
     private suspend fun saveItem(item: Item) {
         dao.upsertItem(item)
     }
+
+    suspend fun deleteAllOrders() {
+        dao.deleteOrders()
+        dao.deleteItems()
+    }
 }

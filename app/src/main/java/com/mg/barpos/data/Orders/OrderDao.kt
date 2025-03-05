@@ -48,4 +48,10 @@ interface OrderDao {
 
     @Query("SELECT * FROM `StoredExtraItem`")
     fun getStoredExtraItems(): Flow<List<StoredExtraItem>>
+
+    @Query("DELETE FROM `Order`")
+    suspend fun deleteOrders()
+
+    @Query("DELETE  FROM `Item`")
+    suspend fun deleteItems()
 }

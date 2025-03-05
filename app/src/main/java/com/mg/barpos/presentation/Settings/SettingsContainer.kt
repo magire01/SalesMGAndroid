@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mg.barpos.presentation.NavigationItem
 import com.mg.barpos.presentation.Settings.State.EditMenuState
 import com.mg.barpos.presentation.Settings.State.StoredMenuItemEvent
+import com.mg.barpos.presentation.Settings.State.TotalsEvent
 import com.mg.barpos.presentation.Settings.State.TotalsState
 import com.mg.barpos.presentation.Settings.View.EditExtraItems
 import com.mg.barpos.presentation.Settings.View.EditMenu
@@ -37,6 +38,7 @@ fun SettingsContainer(
     state: EditMenuState,
     totalsState: TotalsState,
     onEvent: (StoredMenuItemEvent) -> Unit,
+    onTotalsEvent: (TotalsEvent) -> Unit,
     print: () -> Unit,
 ) {
     val tabController = rememberNavController()
@@ -81,7 +83,7 @@ fun SettingsContainer(
                 }
 
                 composable("Totals") {
-                    TotalsScreen(navController = navController, state = totalsState)
+                    TotalsScreen(navController = navController, state = totalsState, onEvent = onTotalsEvent)
                 }
             }
         }
