@@ -6,5 +6,5 @@ import com.mg.barpos.data.MenuList.MenuCategory
 data class EditMenuState (
     val menuList: List<MenuCategory> = emptyList(),
     val extraList: List<ExtraCategory> = emptyList(),
-    val extraCategoryList: List<Pair<String, Int>> = emptyList()
+    val extraCategoryList: MutableList<Pair<String, Int>> = mutableListOf()
 )

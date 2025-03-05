@@ -119,56 +119,61 @@ fun EditExtraItems(
                         }
                     }
                 }
-            }
 
-            if (newCategory.value) {
-                Row {
-                    TextField(value = newCategoryName.value, onValueChange = {
-                        if (newCategoryName.value.isEmpty()) {
-                            newItem.value = true
+                item {
+
+                    Row {
+                        if (newCategory.value) {
+                            Row {
+                                TextField(value = newCategoryName.value, onValueChange = {
+                                    if (newCategoryName.value.isEmpty()) {
+                                        newItem.value = true
+                                    }
+                                    newCategoryName.value = it
+                                })
+
+                                IconButton(onClick = {
+                                    newCategoryLimit.value = newCategoryLimit.value - 1
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ArrowLeft,
+                                        contentDescription = "minus",
+                                        modifier = Modifier.size(35.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                Text(newCategoryLimit.value.toString())
+
+                                IconButton(onClick = {
+                                    newCategoryLimit.value = newCategoryLimit.value + 1
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.ArrowRight,
+                                        contentDescription = "minus",
+                                        modifier = Modifier.size(35.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+
+                                if (newItem.value) {
+                                    Button(onClick = {
+                                        selectedItem.value = StoredExtraItem("", newCategoryName.value, 0, 0,0)
+                                        newCategoryName.value = ""
+                                        newItem.value = false
+                                        popupControl = true
+                                    }) {
+                                        Text(text = "Add Item")
+                                    }
+                                }
+                            }
                         }
-                        newCategoryName.value = it
-                    })
 
-                    IconButton(onClick = {
-                        newCategoryLimit.value = newCategoryLimit.value - 1
-                    }) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowLeft,
-                            contentDescription = "minus",
-                            modifier = Modifier.size(35.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    Text(newCategoryLimit.value.toString())
-
-                    IconButton(onClick = {
-                        newCategoryLimit.value = newCategoryLimit.value + 1
-                    }) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowRight,
-                            contentDescription = "minus",
-                            modifier = Modifier.size(35.dp),
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-
-                    if (newItem.value) {
-                        Button(onClick = {
-                            selectedItem.value = StoredExtraItem("", newCategoryName.value, 0, 0,0)
-                            newCategoryName.value = ""
-                            newItem.value = false
-                            popupControl = true
-                        }) {
-                            Text(text = "Add Item")
+                        Button(onClick = { newCategory.value = true }) {
+                            Text(text = "Add Section")
                         }
                     }
                 }
-            }
-
-            Button(onClick = { newCategory.value = true }) {
-                Text(text = "Add Section")
             }
 
             if (popupControl) {

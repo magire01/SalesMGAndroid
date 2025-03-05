@@ -9,10 +9,12 @@ import android.Manifest.permission.BLUETOOTH_SCAN
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
@@ -44,6 +46,7 @@ import com.mg.barpos.data.MenuItem
 import com.mg.barpos.data.MenuList.MenuService
 import com.mg.barpos.data.OrderDatabase
 import com.mg.barpos.data.Orders.Item
+import com.mg.barpos.data.Orders.ItemTotal
 import com.mg.barpos.data.Orders.Order
 import com.mg.barpos.data.Orders.OrderService
 import com.mg.barpos.presentation.MenuViewModel
@@ -64,6 +67,8 @@ import kotlinx.coroutines.launch
 import java.io.OutputStream
 import java.io.PrintWriter
 import java.net.Socket
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class MainActivity : ComponentActivity() {
@@ -136,7 +141,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return TotalsScreenViewModel(orderService, ::printReceipt) as T
+                    return TotalsScreenViewModel(orderService, ::printTotals) as T
                 }
             }
         }
@@ -186,6 +191,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun printTotals(list: List<ItemTotal>) {
+        val bluetoothConnection: BluetoothConnection? =
+            BluetoothPrintersConnections.selectFirstPaired()
+        if (bluetoothConnection != null) {
+            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
+
+            // Printing commands
+            printer.printFormattedText(createTotalReceipt(list))
+            printer.disconnectPrinter()
+        }
+    }
+
     private fun printReceipt(order: Order, itemList: List<Item>) : Boolean {
         var success = false
         Thread {
@@ -204,7 +221,6 @@ class MainActivity : ComponentActivity() {
                         // Printing commands
                         printer.printFormattedText(createReceipt(order, itemList))
                         printer.disconnectPrinter()
-
                     }
                 } catch (e: EscPosConnectionException) {
                     println("Connection error: ${e.message}.")
@@ -229,6 +245,29 @@ class MainActivity : ComponentActivity() {
 
         return success
 
+    }
+
+    private fun createTotalReceipt(list: List<ItemTotal>): String {
+        var items = ""
+        for (item in list) {
+            items += " ${item.numberOfItems}  - ${item.itemName}  - $${item.total}0\n "
+        }
+        var header: String =  "[C]<font size='small'>Covington Firefighters Assoc</font>" +
+                "\n" +
+                "[C]<font size='normal'>Fish Fry</font>" +
+                "\n" +
+                "[C]<font size='big'>Totals</font>\n" +
+                "\n" +
+                "${items}" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "-------------" +
+                "\n\n\n\n"
+
+        return(header)
     }
 
     private fun createReceipt(order: Order, itemList: List<Item>): String {

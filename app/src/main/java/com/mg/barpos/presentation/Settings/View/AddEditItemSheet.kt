@@ -1,6 +1,8 @@
 package com.mg.barpos.presentation.Settings.View
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,9 +21,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,7 +50,6 @@ fun AddEditItemSheet(
     var itemCategory = remember { mutableStateOf(selectedItem.category)}
     var itemName = remember { mutableStateOf(selectedItem.itemName) }
     var itemPrice = remember { mutableStateOf(selectedItem.itemPrice) }
-    var extraOptions = remember { mutableStateListOf<String>() }
     val extraOptionsArray = remember { selectedItem.sideOptions.toMutableList() }
     val itemInStock = remember { mutableStateOf(selectedItem.inStock)}
 
@@ -100,13 +103,18 @@ fun AddEditItemSheet(
 
                 items(state.extraCategoryList.size) {index ->
                     var (name, limit) = state.extraCategoryList[index]
+
+                    var buttonColor by remember { mutableStateOf(if (extraOptionsArray.contains(name)) Color.Blue else Color.Gray) }
                     Button(
-                        colors = ButtonDefaults.buttonColors(containerColor = if (extraOptionsArray.contains(name)) Color.Yellow else Color.Blue),
+                        colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                         onClick = {
                             if (extraOptionsArray.contains(name)) {
                                 extraOptionsArray -= name
+                                buttonColor = Color.Gray
                             } else {
                                 extraOptionsArray += name
+                                buttonColor = Color.Blue
+
 
                             }
                     }) {

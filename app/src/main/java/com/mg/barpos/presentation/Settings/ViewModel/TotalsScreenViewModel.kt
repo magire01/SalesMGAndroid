@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 
 class TotalsScreenViewModel(
     private val orderService: OrderService,
-    private val printReceipt: (order: Order, itemList: List<Item>) -> Unit
+    private val printTotals: (list: List<ItemTotal>) -> Unit
 ) : ViewModel() {
 
     private var orderList = orderService.getOrders.stateIn(
@@ -81,6 +81,16 @@ class TotalsScreenViewModel(
 
     private fun createItemTotalsList(): MutableList<ItemTotal> {
         var totalsList: MutableList<ItemTotal> = mutableListOf()
+
+        var numberOfOrders = orderList.value.size
+        var totalMoney = 0.0
+
+        for (order in orderList.value) {
+            totalMoney + order.orderTotal
+        }
+        var moneyTotals = ItemTotal(numberOfOrders, "Orders", null, totalMoney)
+        totalsList.add(moneyTotals)
+
         var categories = itemList.value.distinctBy { it.itemName }
         var categoryList: MutableList<Item> = mutableListOf()
 
@@ -104,6 +114,25 @@ class TotalsScreenViewModel(
             )
             totalsList.add(newCategory)
         }
+
+        for (item in itemList.value) {
+
+        }
+
+        return totalsList
+    }
+
+    private fun createOrderTotalsList(): MutableList<ItemTotal> {
+        var totalsList: MutableList<ItemTotal> = mutableListOf()
+        var numberOfOrders = orderList.value.size
+        var totalMoney = 0.0
+
+        for (order in orderList.value) {
+            totalMoney + order.orderTotal
+        }
+
+        var orderTotals = ItemTotal(numberOfOrders, "Orders Total", null, null)
+        var moneyTotals = ItemTotal(numberOfOrders, "Money Total", null, totalMoney)
 
         return totalsList
     }

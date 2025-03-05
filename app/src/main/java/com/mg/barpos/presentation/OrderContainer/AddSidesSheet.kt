@@ -3,6 +3,8 @@ package com.mg.barpos.presentation.OrderContainer
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,7 +40,9 @@ import com.mg.barpos.presentation.components.SelectedSideCard
 import com.mg.barpos.presentation.components.SubmitButton
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 fun AddSidesSheet(
     menuState: MenuState,
@@ -93,7 +97,7 @@ fun AddSidesSheet(
                 items(menuState.extraList.size) { index ->
                     var selectedItems = remember { mutableStateListOf<String>() }
                     Text("${menuState.extraList[index].categoryName} (Select ${menuState.extraList[index].categoryLimit})")
-                    Row {
+                    FlowRow(modifier = Modifier.padding(8.dp)) {
                         for (list in menuState.extraList[index].extraList) {
                             Card(
                                 modifier = Modifier

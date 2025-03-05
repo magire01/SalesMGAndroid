@@ -8,3 +8,4 @@ data class ItemTotal(
     val limit: Int?,
     val total: Double?
 )
+

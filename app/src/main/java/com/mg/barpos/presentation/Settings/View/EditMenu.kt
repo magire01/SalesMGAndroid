@@ -126,35 +126,39 @@ fun EditMenu(
                         }
                     }
                 }
-            }
 
-            if (newCategory.value) {
-                Row {
-                    TextField(value = newCategoryName.value, onValueChange = {
-                        if (newCategoryName.value.isEmpty()) {
-                            newItem.value = true
-                        }
-                        newCategoryName.value = it
-                    })
+                item {
+                    if (newCategory.value) {
+                        Row {
+                            TextField(value = newCategoryName.value, onValueChange = {
+                                if (newCategoryName.value.isEmpty()) {
+                                    newItem.value = true
+                                }
+                                newCategoryName.value = it
+                            })
 
-                    if (newItem.value) {
-                        Button(onClick = {
-                            selectedItem.value = StoredMenuItem("", 0.00, newCategoryName.value, 0, 0, emptyArray(), emptyArray())
-                            newCategoryName.value = ""
-                            newItem.value = false
-                            popupControl = true
-                        }) {
-                            Text(text = "Add Item")
+                            if (newItem.value) {
+                                Button(onClick = {
+                                    selectedItem.value = StoredMenuItem("", 0.00, newCategoryName.value, 0, 0, emptyArray(), emptyArray())
+                                    newCategoryName.value = ""
+                                    newItem.value = false
+                                    popupControl = true
+                                }) {
+                                    Text(text = "Add Item")
+                                }
+                            }
                         }
+
+
+                    }
+
+                    Button(onClick = { newCategory.value = true }) {
+                        Text(text = "Add Section")
                     }
                 }
-
-
             }
 
-            Button(onClick = { newCategory.value = true }) {
-                Text(text = "Add Section")
-            }
+
 
             if (popupControl) {
                 AddEditItemSheet(
