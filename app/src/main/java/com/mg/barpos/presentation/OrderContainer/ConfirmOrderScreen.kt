@@ -72,7 +72,9 @@ fun ConfirmOrderScreen(
                         items = state.selectedItems
                     )
                 )
-                navController.popBackStack()
+                if (!state.successfulPrint.value) {
+                    navController.popBackStack()
+                }
             }
         }
     ) { paddingValues ->

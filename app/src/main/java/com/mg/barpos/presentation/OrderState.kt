@@ -25,5 +25,6 @@ data class OrderState(
     var selectedItems: List<Item> = emptyList(),
     val menuList: List<MenuCategory> = emptyList(),
     val extraList: List<ExtraCategory> = emptyList(),
-    val isLoading: MutableState<Boolean> = mutableStateOf(false)
+    val isLoading: MutableState<Boolean> = mutableStateOf(false),
+    var successfulPrint: MutableState<Boolean> = mutableStateOf(false)
 )

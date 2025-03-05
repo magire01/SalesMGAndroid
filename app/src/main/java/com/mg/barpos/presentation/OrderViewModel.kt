@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 class OrderViewModel(
     private val orderService: OrderService,
     menuService: MenuService,
-    private val printReceipt: (order: Order, itemList: List<Item>) -> Unit
+    private val printReceipt: (order: Order, itemList: List<Item>) -> Boolean
 ) : ViewModel() {
 
 
@@ -75,7 +75,8 @@ class OrderViewModel(
                     FullScreenLoadingManager.showLoader()
                     orderService.createOrder(order, itemList)
                     order.orderNumber = state.value.orderNumber
-                    printReceipt(order, itemList)
+                    var success = printReceipt(order, itemList)
+                    state.value.successfulPrint = mutableStateOf(success)
                     FullScreenLoadingManager.hideLoader()
                 }
                 _state.update {
