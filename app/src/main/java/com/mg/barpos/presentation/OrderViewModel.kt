@@ -81,8 +81,7 @@ class OrderViewModel(
                 }
                 _state.update {
                     it.copy(
-                        orderNumber = state.value.orders.size,
-                        orderName = mutableStateOf(""),
+
                     )
                 }
             }

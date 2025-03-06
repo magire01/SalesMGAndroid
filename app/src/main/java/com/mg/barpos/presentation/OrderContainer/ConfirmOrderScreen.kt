@@ -13,13 +13,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.text.TextStyle
@@ -31,6 +34,7 @@ import androidx.navigation.NavController
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
+import com.mg.barpos.presentation.Settings.State.TotalsEvent
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.components.ItemRow
 import com.mg.barpos.presentation.components.SubmitButton
@@ -46,6 +50,7 @@ fun ConfirmOrderScreen(
     onItemEvent: (ItemEvent) -> Unit,
 ) {
     var orderTotal: Double = 0.00
+    var errorAlert = remember { state.successfulPrint.value }
     Scaffold(
         modifier = Modifier.imePadding().fillMaxHeight(),
     topBar = {
@@ -72,9 +77,6 @@ fun ConfirmOrderScreen(
                         items = state.selectedItems
                     )
                 )
-                if (!state.successfulPrint.value) {
-                    navController.popBackStack()
-                }
             }
         }
     ) { paddingValues ->
@@ -119,6 +121,38 @@ fun ConfirmOrderScreen(
             item {
                 TotalRow(orderTotal = orderTotal)
             }
+        }
+
+        if (!errorAlert) {
+            AlertDialog(
+                title = {
+                    Text(text = "Delete All Orders?")
+                },
+                text = {
+                    Text(text = "You are about to delete all orders, you will not be able to recover them")
+                },
+                onDismissRequest = {
+                    errorAlert = true
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            errorAlert = true
+                        }
+                    ) {
+                        Text("Delete")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = {
+                            errorAlert = true
+                        }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
     }
 }

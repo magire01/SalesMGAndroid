@@ -9,6 +9,10 @@ sealed interface OrderEvent {
         val orderTotal: Double,
         val items: List<Item>
     ): OrderEvent
+
+    data class PrintOrder(
+        val success: Boolean,
+    )
 }
 
 sealed interface ItemEvent {
