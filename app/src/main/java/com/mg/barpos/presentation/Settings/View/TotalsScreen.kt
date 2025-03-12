@@ -44,9 +44,9 @@ fun TotalsScreen(navController: NavController, state: TotalsState, onEvent: (Tot
         ) {
             items(state.itemTotals.size) { index ->
                 Row {
-                    Text(state.itemTotals[index].numberOfItems.toString())
-                    Text(state.itemTotals[index].itemName)
-                    Text(state.itemTotals[index].total.toString())
+                    Text(state.itemTotals[index].numberOfItems.toString(), modifier = Modifier.padding(8.dp))
+                    Text(state.itemTotals[index].itemName, modifier = Modifier.padding(8.dp))
+                    Text(state.itemTotals[index].total.toString(), modifier = Modifier.padding(8.dp))
                 }
             }
 
@@ -58,13 +58,13 @@ fun TotalsScreen(navController: NavController, state: TotalsState, onEvent: (Tot
                                 print = true,
                             )
                         )
-                    }) {
+                    }, modifier = Modifier.padding(8.dp)) {
                         Text("Print Report")
                     }
 
                     Button(onClick = {
                         deleteAlert.value = true
-                    }) {
+                    }, modifier = Modifier.padding(8.dp)) {
                         Text("Delete Orders")
                     }
                 }

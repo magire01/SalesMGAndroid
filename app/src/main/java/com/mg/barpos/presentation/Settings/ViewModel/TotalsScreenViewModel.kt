@@ -109,10 +109,30 @@ class TotalsScreenViewModel(
             )
             totalsList.add(newCategory)
         }
-
+        val sideList = mutableListOf<String>()
         for (item in itemList.value) {
-
+            for (side in item.selectedSides) {
+                sideList += side
+            }
         }
+        val sideOptions = sideList.distinct()
+        val optionList = mutableListOf<String>()
+
+        for (option in sideOptions) {
+            optionList += option
+        }
+
+        for (option in optionList) {
+            var newList = sideList.filter { it == option }
+            var newCategory = ItemTotal(
+                numberOfItems = newList.size,
+                itemName = "SIDE - ${newList.first()}",
+                limit = null,
+                total = 0.0,
+            )
+            totalsList.add(newCategory)
+        }
+
 
         return totalsList
     }
