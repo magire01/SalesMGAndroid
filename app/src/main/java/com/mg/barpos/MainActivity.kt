@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return MyOrdersViewModel(orderService) as T
+                    return MyOrdersViewModel(orderService, ::printBluetoothReceipt, ::printNetworkReceipt) as T
                 }
             }
         }
@@ -470,7 +470,8 @@ class MainActivity : ComponentActivity() {
                             SavedOrderDetails(
                                 state = myOrdersState,
                                 navController = navController,
-                                onEvent = myOrdersViewModel::onItemEvent)
+                                onEvent = myOrdersViewModel::onItemEvent,
+                                onOrderEvent = myOrdersViewModel::onOrderEvent)
                         }
                         composable("ConfirmOrderScreen") {
                             ConfirmOrderScreen(

@@ -8,7 +8,8 @@ data class Order(
     val orderName: String = "",
     val isTab: Boolean = false,
     val orderTotal: Double,
+    val orderNumber: Int,
 
     @PrimaryKey(autoGenerate = true)
-    var orderNumber: Int = 0
+    var orderId: Int = 0
     )

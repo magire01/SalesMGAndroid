@@ -10,7 +10,7 @@ import com.mg.barpos.data.Orders.OrderDao
 
 @Database(
     entities = [Order::class, Item::class, StoredMenuItem::class, StoredExtraItem::class],
-    version = 15,
+    version = 16,
     exportSchema = false
 )
 @TypeConverters(Converter::class)

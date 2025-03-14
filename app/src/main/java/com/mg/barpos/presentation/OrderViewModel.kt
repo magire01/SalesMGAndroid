@@ -66,7 +66,8 @@ class OrderViewModel(
                 var order = Order(
                     orderName = event.orderName,
                     isTab = event.isTab,
-                    orderTotal = event.orderTotal
+                    orderTotal = event.orderTotal,
+                    orderNumber = orders.value.size + 1
                 )
 
                 val itemList = event.items
@@ -74,7 +75,6 @@ class OrderViewModel(
                 viewModelScope.launch() {
                     FullScreenLoadingManager.showLoader()
                     orderService.createOrder(order, itemList)
-                    order.orderNumber = state.value.orderNumber
                     var success = printReceipt(order, itemList)
                     state.value.successfulPrint = mutableStateOf(success)
                     FullScreenLoadingManager.hideLoader()
