@@ -218,23 +218,29 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun printNetworkReceipt(order: Order, itemList: List<Item>) : Result<Boolean> {
-        return try {
-            val printer = EscPosPrinter(TcpConnection("192.168.1.87", 9100), 203, 80f, 32)
-            printer.printFormattedTextAndCut(createKitchenReceipt(order, itemList))
-            Result.success(true)
-        } catch (e: EscPosConnectionException) {
-            println("Connection error: ${e.message}.")
-            Result.failure(e)
-        } catch (e: EscPosParserException) {
-            println("Parser error: ${e.message}")
-            Result.failure(e)
-        } catch (e: EscPosEncodingException) {
-            println("Encoding error: ${e.message}")
-            Result.failure(e)
-        } catch (e: Exception) {
-            println("An unexpected error occurred: ${e.message}")
-            Result.failure(e)
-        }
+
+        Thread {
+            try {
+                val printer = EscPosPrinter(TcpConnection("192.168.1.87", 9100), 203, 80f, 32)
+                printer.printFormattedTextAndCut(createKitchenReceipt(order, itemList))
+                Result.success(true)
+            } catch (e: EscPosConnectionException) {
+                println("Connection error: ${e.message}.")
+                Result.failure(e)
+            } catch (e: EscPosParserException) {
+                println("Parser error: ${e.message}")
+                Result.failure(e)
+            } catch (e: EscPosEncodingException) {
+                println("Encoding error: ${e.message}")
+                Result.failure(e)
+            } catch (e: Exception) {
+                println("An unexpected error occurred: ${e.message}")
+                Result.failure(e)
+            }
+        }.start()
+
+        return Result.success(true)
+
     }
 
     private fun printBluetoothReceipt(order: Order, itemList: List<Item>) {

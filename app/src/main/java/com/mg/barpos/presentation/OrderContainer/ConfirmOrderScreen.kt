@@ -77,6 +77,8 @@ fun ConfirmOrderScreen(
                         items = state.selectedItems
                     )
                 )
+
+                navController.popBackStack()
             }
         }
     ) { paddingValues ->
