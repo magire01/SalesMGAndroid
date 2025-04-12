@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Sort
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.mg.barpos.R
 import com.mg.barpos.presentation.ItemEvent
 import com.mg.barpos.presentation.OrderContainer.MyOrders.MyOrdersState
+import com.mg.barpos.presentation.OrderEvent
 import com.mg.barpos.presentation.OrderState
 import com.mg.barpos.presentation.components.IconButton
 import com.mg.barpos.presentation.components.ItemRow
@@ -48,6 +50,7 @@ fun SavedOrderDetails(
     state: MyOrdersState,
     navController: NavController,
     onEvent: (ItemEvent) -> Unit,
+    onOrderEvent: (OrderEvent) -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -90,6 +93,34 @@ fun SavedOrderDetails(
                 TotalRow(
                     orderTotal = state.orderTotal.value
                 )
+            }
+
+            item {
+                Row {
+                    Button(onClick = {
+                        onOrderEvent(
+                            OrderEvent.PrintBluetooth(
+                                orderNumber = state.selectedOrderNumber.value,
+                                items = state.items
+                            )
+                        )
+                    }) {
+                        Text("Print Customer")
+                    }
+
+                    Button(onClick = {
+                        onOrderEvent(
+                            OrderEvent.PrintNetwork(
+                                orderNumber = state.selectedOrderNumber.value,
+                                items = state.items
+                            )
+                        )
+                    }) {
+                        Text("Print Kitchen")
+                    }
+                }
+
+
             }
         }
     }

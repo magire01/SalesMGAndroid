@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return MyOrdersViewModel(orderService) as T
+                    return MyOrdersViewModel(orderService, ::printBluetoothReceipt, ::printNetworkReceipt) as T
                 }
             }
         }
@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
         factoryProducer = {
             object: ViewModelProvider.Factory {
                 override fun<T: ViewModel> create(modelClass: Class<T>): T {
-                    return OrderViewModel(orderService, menuService, ::printReceipt) as T
+                    return OrderViewModel(orderService, menuService, ::handlePrint) as T
                 }
             }
         }
@@ -199,6 +199,64 @@ class MainActivity : ComponentActivity() {
 
             // Printing commands
             printer.printFormattedText(createTotalReceipt(list))
+            printer.disconnectPrinter()
+        }
+    }
+
+    private fun handlePrint(order: Order, itemList: List<Item>) : Boolean {
+        var result = printNetworkReceipt(order, itemList)
+
+        result.fold(
+            onSuccess = {
+                printBluetoothReceipt(order, itemList)
+                return true
+            },
+            onFailure = {
+                return false
+            }
+        )
+    }
+
+    private fun printNetworkReceipt(order: Order, itemList: List<Item>) : Result<Boolean> {
+        var success = false
+        Thread {
+            var retry = 0
+            while (retry < 10 && !success) {
+                try {
+                    val printer = EscPosPrinter(TcpConnection("192.168.1.87", 9100), 203, 80f, 32)
+                    printer.printFormattedTextAndCut(createKitchenReceipt(order, itemList))
+                    success = true
+                } catch (e: EscPosConnectionException) {
+                    println("Connection error: ${e.message}.")
+                    Thread.sleep(1000) // Wait before retrying
+                    retry++
+                } catch (e: EscPosParserException) {
+                    println("Parser error: ${e.message}")
+                    Thread.sleep(1000) // Wait before retrying
+                    retry++
+                } catch (e: EscPosEncodingException) {
+                    println("Encoding error: ${e.message}")
+                    Thread.sleep(1000) // Wait before retrying
+                    retry++
+                } catch (e: Exception) {
+                    println("An unexpected error occurred: ${e.message}")
+                    Thread.sleep(1000) // Wait before retrying
+                    retry++
+                }
+            }
+        }.start()
+
+        return Result.success(success)
+    }
+
+    private fun printBluetoothReceipt(order: Order, itemList: List<Item>) {
+        val bluetoothConnection: BluetoothConnection? =
+            BluetoothPrintersConnections.selectFirstPaired()
+        if (bluetoothConnection != null) {
+            val printer = EscPosPrinter(bluetoothConnection, 203, 48f, 32)
+
+            // Printing commands
+            printer.printFormattedText(createReceipt(order, itemList))
             printer.disconnectPrinter()
         }
     }
@@ -424,7 +482,8 @@ class MainActivity : ComponentActivity() {
                             SavedOrderDetails(
                                 state = myOrdersState,
                                 navController = navController,
-                                onEvent = myOrdersViewModel::onItemEvent)
+                                onEvent = myOrdersViewModel::onItemEvent,
+                                onOrderEvent = myOrdersViewModel::onOrderEvent)
                         }
                         composable("ConfirmOrderScreen") {
                             ConfirmOrderScreen(
